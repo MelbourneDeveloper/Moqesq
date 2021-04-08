@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31112.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moqesq.Tests", "Moqesq.Tests\Moqesq.Tests.csproj", "{A5F73EB4-5888-4E86-8247-64902F18149B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moqesq", "Moqesq\Moqesq.csproj", "{E2281570-8984-4C53-BF4C-9B7230A2B9E6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Stuff", "Solution Stuff", "{41234704-F24D-48FE-AAFF-B6075B70B1CE}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A5F73EB4-5888-4E86-8247-64902F18149B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5F73EB4-5888-4E86-8247-64902F18149B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5F73EB4-5888-4E86-8247-64902F18149B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5F73EB4-5888-4E86-8247-64902F18149B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2281570-8984-4C53-BF4C-9B7230A2B9E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2281570-8984-4C53-BF4C-9B7230A2B9E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2281570-8984-4C53-BF4C-9B7230A2B9E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2281570-8984-4C53-BF4C-9B7230A2B9E6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {93195990-EBA0-4FD8-984F-FE200C09B8FA}
+	EndGlobalSection
+EndGlobal
