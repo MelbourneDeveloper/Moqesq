@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -12,6 +13,19 @@ namespace Moqesq.Tests
             Ext.FromCtors<SomeClass>(sc => sc.Bla())
                 .GetRequiredMock<ITest>()
                 .Verify(t => t.DoTestThing(), Times.Once);
+        }
+
+        [TestMethod]
+        public void TestMethod2()
+        {
+
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddMocksFor<SomeClass>();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var someClass = serviceProvider.GetRequiredService<SomeClass>();
+            var test = serviceProvider.GetRequiredService<Mock<ITest>>();
+            someClass.Bla();
+            test.Verify(t => t.DoTestThing(), Times.Once);
         }
     }
 
