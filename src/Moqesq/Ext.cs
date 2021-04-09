@@ -16,7 +16,7 @@ namespace Moqesq
                 .SelectMany(c => c.GetParameters())
                 .Select(p => p.ParameterType)
                 .ToList()
-                .ForEach(foreachType ?? (t)=>{ });
+                .ForEach(foreachType ?? ((t) => serviceCollection.AddSingleton(t)));
 
             serviceCollection.AddSingleton(typeof(T));
 
@@ -37,7 +37,7 @@ namespace Moqesq
             var serviceCollection = new ServiceCollection();
             var mocksByType = new Dictionary<Type, Mock>();
 
-            serviceCollection.AddMocksFor<T>((t) => 
+            serviceCollection.AddMocksFor<T>((t) =>
             {
                 RegisterMock(serviceCollection, t, mocksByType);
             });
