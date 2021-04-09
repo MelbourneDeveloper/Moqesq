@@ -16,10 +16,11 @@ namespace Moqesq
                 .SelectMany(c => c.GetParameters())
                 .Select(p => p.ParameterType)
                 .ToList()
-                .ForEach(foreachType ?? ((t) => 
-                { 
-                    serviceCollection.AddSingleton(GetMock(t));
-                    serviceCollection.AddSingleton(t);
+                .ForEach(foreachType ?? ((t) =>
+                {
+                    var mock = GetMock(t);
+                    serviceCollection.AddSingleton(mock.GetType(), mock);
+                    serviceCollection.AddSingleton(t, mock.Object);
                 }));
 
             serviceCollection.AddSingleton(typeof(T));
