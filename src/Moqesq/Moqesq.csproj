@@ -9,6 +9,11 @@
 		<RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
 		<RunAnalyzers>true</RunAnalyzers>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<Version>0.1.0-alpha</Version>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Description>Yes, another Moq extensions library</Description>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -9,27 +9,38 @@ namespace Moqesq
     public static class Ext
     {
 
+        public static IServiceCollection AddMocksFor<T>(this IServiceCollection serviceCollection, Action<Type>? foreachType = null)
+        {
+            typeof(T)
+                .GetConstructors()
+                .SelectMany(c => c.GetParameters())
+                .Select(p => p.ParameterType)
+                .ToList()
+                .ForEach(foreachType ?? (t)=>{ });
+
+            serviceCollection.AddSingleton(typeof(T));
+
+            return serviceCollection;
+        }
+
+        private static void RegisterMock(IServiceCollection serviceCollection, Type t, Dictionary<Type, Mock> mocksByType)
+        {
+            object? mockInstance = Activator.CreateInstance(typeof(Mock<>).MakeGenericType(new Type[] { t }));
+            if (mockInstance == null) throw new InvalidOperationException($"Type {t} cannot be mocked");
+            var mock = (Mock)mockInstance;
+            mocksByType.Add(t, mock);
+            serviceCollection.AddSingleton(t, mock.Object);
+        }
 
         public static MockContainer<T> FromCtors<T>(Action<T>? act = null, Action<IServiceCollection>? configureServices = null) where T : notnull
         {
             var serviceCollection = new ServiceCollection();
             var mocksByType = new Dictionary<Type, Mock>();
 
-            typeof(T)
-                .GetConstructors()
-                .SelectMany(c => c.GetParameters())
-                .Select(p => p.ParameterType)
-                .ToList()
-                .ForEach((t) =>
-                {
-                    object? mockInstance = Activator.CreateInstance(typeof(Mock<>).MakeGenericType(new Type[] { t }));
-                    if (mockInstance == null) throw new InvalidOperationException($"Type {t} cannot be mocked");
-                    var mock = (Mock)mockInstance;
-                    mocksByType.Add(t, mock);
-                    serviceCollection.AddSingleton(t, mock.Object);
-                });
-
-            serviceCollection.AddSingleton(typeof(T));
+            serviceCollection.AddMocksFor<T>((t) => 
+            {
+                RegisterMock(serviceCollection, t, mocksByType);
+            });
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
