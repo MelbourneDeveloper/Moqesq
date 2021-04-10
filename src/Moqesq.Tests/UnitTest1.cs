@@ -18,15 +18,14 @@ namespace Moqesq.Tests
         [TestMethod]
         public void TestMethod2()
         {
-
             var serviceCollection = new ServiceCollection();
-            serviceCollection.AddMocksFor<SomeClass>();
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            var someClass = serviceProvider.GetRequiredService<SomeClass>();
-            var test = serviceProvider.GetRequiredService<Mock<ITest>>();
+            var someClass = serviceCollection.FromCtors<SomeClass>();
+            var test = someClass.GetRequiredService<Mock<ITest>>();
             someClass.Bla();
             test.Verify(t => t.DoTestThing(), Times.Once);
         }
+
+
     }
 
 }

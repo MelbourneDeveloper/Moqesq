@@ -70,6 +70,13 @@ namespace Moqesq
             return new(serviceCollection, serviceProvider, mocksByType, service);
         }
 
+        public static MockContainer<T> FromCtors<T>(this IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddMocksFor<T>();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            return new MockContainer<T>(serviceCollection, serviceProvider, null, serviceProvider.GetRequiredService<T>());
+        }
+
         internal static IServiceCollection Clone(this IServiceCollection serviceCollection)
         {
             var serviceCollection2 = new ServiceCollection();
