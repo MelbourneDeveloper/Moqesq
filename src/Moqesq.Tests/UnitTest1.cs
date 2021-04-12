@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -13,6 +14,18 @@ namespace Moqesq.Tests
                 .GetRequiredMock<ITest>()
                 .Verify(t => t.DoTestThing(), Times.Once);
         }
+
+        [TestMethod]
+        public void TestMethod2()
+        {
+            var serviceProvider = Ext.BuildServiceProviderFor<SomeClass>();
+            var someClass = serviceProvider.GetRequiredService<SomeClass>();
+            var test = serviceProvider.GetRequiredService<Mock<ITest>>();
+            someClass.Bla();
+            test.Verify(t => t.DoTestThing(), Times.Once);
+        }
+
+
     }
 
 }

@@ -9,27 +9,49 @@ namespace Moqesq
     public static class Ext
     {
 
+        public static IServiceCollection AddMocksFor<T>(this IServiceCollection serviceCollection, Action<Type>? foreachType = null)
+        {
+            typeof(T)
+                .GetConstructors()
+                .SelectMany(c => c.GetParameters())
+                .Select(p => p.ParameterType)
+                .ToList()
+                .ForEach(foreachType ?? ((t) =>
+                {
+                    var mock = GetMock(t);
+                    serviceCollection.AddSingleton(mock.GetType(), mock);
+                    serviceCollection.AddSingleton(t, mock.Object);
+                }));
+
+            serviceCollection.AddSingleton(typeof(T));
+
+            return serviceCollection;
+        }
+
+        private static void RegisterMock(IServiceCollection serviceCollection, Type t, Dictionary<Type, Mock> mocksByType)
+        {
+            Mock mock = GetMock(t);
+            mocksByType.Add(t, mock);
+            serviceCollection.AddSingleton(t, mock.Object);
+        }
+
+        private static Mock GetMock(Type t)
+        {
+            object? mockInstance = Activator.CreateInstance(typeof(Mock<>).MakeGenericType(new Type[] { t }));
+            if (mockInstance == null) throw new InvalidOperationException($"Type {t} cannot be mocked");
+            var mock = (Mock)mockInstance;
+            return mock;
+        }
 
         public static MockContainer<T> FromCtors<T>(Action<T>? act = null, Action<IServiceCollection>? configureServices = null) where T : notnull
         {
             var serviceCollection = new ServiceCollection();
             var mocksByType = new Dictionary<Type, Mock>();
 
-            typeof(T)
-                .GetConstructors()
-                .SelectMany(c => c.GetParameters())
-                .Select(p => p.ParameterType)
-                .ToList()
-                .ForEach((t) =>
-                {
-                    object? mockInstance = Activator.CreateInstance(typeof(Mock<>).MakeGenericType(new Type[] { t }));
-                    if (mockInstance == null) throw new InvalidOperationException($"Type {t} cannot be mocked");
-                    var mock = (Mock)mockInstance;
-                    mocksByType.Add(t, mock);
-                    serviceCollection.AddSingleton(t, mock.Object);
-                });
-
-            serviceCollection.AddSingleton(typeof(T));
+            serviceCollection.AddMocksFor<T>((t) =>
+            {
+                RegisterMock(serviceCollection, t, mocksByType);
+            });
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
@@ -47,6 +69,13 @@ namespace Moqesq
 
             return new(serviceCollection, serviceProvider, mocksByType, service);
         }
+
+        public static ServiceProvider BuildServiceProviderFor<T>(this IServiceCollection serviceCollection)
+        => serviceCollection.AddMocksFor<T>().BuildServiceProvider();
+
+        public static ServiceProvider BuildServiceProviderFor<T>()
+        => new ServiceCollection().BuildServiceProviderFor<T>();
+
 
         internal static IServiceCollection Clone(this IServiceCollection serviceCollection)
         {
