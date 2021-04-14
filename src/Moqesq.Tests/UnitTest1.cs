@@ -40,13 +40,12 @@ namespace Moqesq.Tests
         [TestMethod]
         public void TestMethod4()
         {
-            var func = new Func<SomeClass, Task<string>>((someClass) 
+            new Func<SomeClass, Task<string>>((someClass)
                 => Task.FromResult(someClass.Bla2()))
                 .PerformTest(
                 (result, container) => Assert.AreEqual(null, result));
 
-        }
-
+        }        
     }
 
 }
