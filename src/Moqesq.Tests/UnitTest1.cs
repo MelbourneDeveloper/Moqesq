@@ -45,7 +45,18 @@ namespace Moqesq.Tests
                 .PerformTest(
                 (result, container) => Assert.AreEqual(null, result));
 
-        }        
+        }
+
+        [TestMethod]
+        public async Task TestMethod5()
+        {
+            await Ext.FromCtors<SomeClass, string>()
+                .Assert((result, someClass) => someClass.GetRequiredMock<ITest>()
+                .Verify(t => t.DoTestThing(), Times.Once))
+                .Act(sc => Task.FromResult<string>(sc.Bla2()))
+                .Go();
+
+        }
     }
 
 }
