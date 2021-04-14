@@ -76,6 +76,17 @@ namespace Moqesq.Tests
                 .Assert((result, someClass) => Assert.AreEqual("123", result))
                 .Go();
         }
+
+        [TestMethod]
+        public async Task TestMethod8()
+        {
+            async Task<string> LocaFunction(SomeClass someClass) => someClass.Bla2();
+
+            await ((Func<SomeClass, Task<string>>)LocaFunction).FromCtors()
+                .Arrange((container) => container.GetRequiredMock<ITest>().Setup(t => t.GetAString()).Returns("123"))
+                .Assert((result, someClass) => Assert.AreEqual("123", result))
+                .Go();
+        }
     }
 
 }
