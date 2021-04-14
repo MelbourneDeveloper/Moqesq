@@ -69,8 +69,7 @@ namespace Moqesq
                 //TODO
                 (a) => throw new NotImplementedException(),
                 (a) => { },
-                (a, b) => { },
-                (a) => { });
+                (a, b) => { });
         }
 
 
@@ -100,8 +99,7 @@ namespace Moqesq
                 service,
                 act,
                 (a) => { },
-                (a, b) => { },
-                configureServices ?? (a => { }));
+                (a, b) => { });
         }
 
         public static Task PerformTest<TResult, TManager>(
