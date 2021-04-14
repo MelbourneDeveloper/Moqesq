@@ -128,7 +128,14 @@ namespace Moqesq
         public Mock<TMock> GetRequiredMock<TMock>() where TMock : class
             => (Mock<TMock>)MocksByType[typeof(TMock)];
 
-        public Task<TResult> Go() => ActFunc(Instance);
+        public async Task<TResult> Go()
+        {
+            ConfigureServicesFunc(ServiceCollection);
+            ArrangeFunc(this);
+            var result = await ActFunc(Instance).ConfigureAwait(false);
+            AssertFunc(result, this);
+            return result;
+        }
     }
 
 }
