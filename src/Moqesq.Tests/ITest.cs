@@ -3,5 +3,6 @@
     public interface ITest
     {
         void DoTestThing();
+        string GetAString();
     }
 }

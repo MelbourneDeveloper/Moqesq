@@ -13,5 +13,7 @@
         {
             test.DoTestThing();
         }
+
+        public string Bla2() => test.GetAString();
     }
 }

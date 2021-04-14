@@ -3,11 +3,14 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Moqesq
 {
     public static class Ext
     {
+
+        #region Public Methods
 
         public static IServiceCollection AddMocksFor<T>(this IServiceCollection serviceCollection, Action<Type>? foreachType = null)
         {
@@ -28,20 +31,11 @@ namespace Moqesq
             return serviceCollection;
         }
 
-        private static void RegisterMock(IServiceCollection serviceCollection, Type t, Dictionary<Type, Mock> mocksByType)
-        {
-            Mock mock = GetMock(t);
-            mocksByType.Add(t, mock);
-            serviceCollection.AddSingleton(t, mock.Object);
-        }
+        public static ServiceProvider BuildServiceProviderFor<T>(this IServiceCollection serviceCollection)
+        => serviceCollection.AddMocksFor<T>().BuildServiceProvider();
 
-        private static Mock GetMock(Type t)
-        {
-            object? mockInstance = Activator.CreateInstance(typeof(Mock<>).MakeGenericType(new Type[] { t }));
-            if (mockInstance == null) throw new InvalidOperationException($"Type {t} cannot be mocked");
-            var mock = (Mock)mockInstance;
-            return mock;
-        }
+        public static ServiceProvider BuildServiceProviderFor<T>()
+        => new ServiceCollection().BuildServiceProviderFor<T>();
 
         public static MockContainer<T> FromCtors<T>(Action<T>? act = null, Action<IServiceCollection>? configureServices = null) where T : notnull
         {
@@ -70,12 +64,27 @@ namespace Moqesq
             return new(serviceCollection, serviceProvider, mocksByType, service);
         }
 
-        public static ServiceProvider BuildServiceProviderFor<T>(this IServiceCollection serviceCollection)
-        => serviceCollection.AddMocksFor<T>().BuildServiceProvider();
+        public static Task PerformTest<TResult, TManager>(
+            this Func<TManager, Task<TResult>> act,
+            Action<MockContainer<TManager>> arrange,
+            Action<TResult, MockContainer<TManager>> assert) where TManager : notnull
+            =>
+            act == null ? throw new ArgumentNullException(nameof(act)) :
+            assert == null ? throw new ArgumentNullException(nameof(assert)) :
+            PerformTest(arrange, act, assert);
 
-        public static ServiceProvider BuildServiceProviderFor<T>()
-        => new ServiceCollection().BuildServiceProviderFor<T>();
+        public static Task PerformTest<TResult, TManager>(
+            this Func<TManager, Task<TResult>> act,
+            Action<TResult, MockContainer<TManager>> assert) 
+             where TManager : notnull
+            =>
+            act == null ? throw new ArgumentNullException(nameof(act)) :
+            assert == null ? throw new ArgumentNullException(nameof(assert)) :
+            PerformTest(null, act, assert);
 
+        #endregion Public Methods
+
+        #region Internal Methods
 
         internal static IServiceCollection Clone(this IServiceCollection serviceCollection)
         {
@@ -89,6 +98,40 @@ namespace Moqesq
             return serviceCollection2;
         }
 
+        #endregion Internal Methods
+
+        #region Private Methods
+
+        private static Mock GetMock(Type t)
+        {
+            object? mockInstance = Activator.CreateInstance(typeof(Mock<>).MakeGenericType(new Type[] { t }));
+            if (mockInstance == null) throw new InvalidOperationException($"Type {t} cannot be mocked");
+            var mock = (Mock)mockInstance;
+            return mock;
+        }
+
+        private static async Task PerformTest<TResult, TManager>(
+            Action<MockContainer<TManager>>? arrange,
+            Func<TManager, Task<TResult>> act,
+            Action<TResult, MockContainer<TManager>> assert
+            ) where TManager : notnull
+        {
+            var mockContainer = FromCtors<TManager>();
+            arrange?.Invoke(mockContainer);
+
+            var response = await act(mockContainer.Instance).ConfigureAwait(false);
+
+            assert(response, mockContainer);
+        }
+
+        private static void RegisterMock(IServiceCollection serviceCollection, Type t, Dictionary<Type, Mock> mocksByType)
+        {
+            Mock mock = GetMock(t);
+            mocksByType.Add(t, mock);
+            serviceCollection.AddSingleton(t, mock.Object);
+        }
+
+        #endregion Private Methods
     }
 
 }
