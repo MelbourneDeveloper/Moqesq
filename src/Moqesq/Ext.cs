@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -37,7 +37,7 @@ namespace Moqesq
         public static ServiceProvider BuildServiceProviderFor<T>()
         => new ServiceCollection().BuildServiceProviderFor<T>();
 
-        public static MockContainer<T> FromCtors<T>(Action<T>? act = null, Action<IServiceCollection>? configureServices = null) where T : notnull
+        public static MockContainer<T, TResult> FromCtors<T, TResult>(Action<T>? act = null, Action<IServiceCollection>? configureServices = null) where T : notnull
         {
             var serviceCollection = new ServiceCollection();
             var mocksByType = new Dictionary<Type, Mock>();
@@ -61,13 +61,62 @@ namespace Moqesq
                 act(service);
             }
 
-            return new(serviceCollection, serviceProvider, mocksByType, service);
+            return new(
+                serviceCollection, 
+                serviceProvider, 
+                mocksByType, 
+                service, 
+                //TODO
+                (a) => throw new NotImplementedException(), 
+                (a) => { }, 
+                (a, b) => { });
         }
+
+
+        //  public static MockContainer<T, TResult> FromCtors<T, TResult>(
+        //Func<T, Task<TResult>> act,
+        //Action<IServiceCollection>? configureServices = null
+        //) where T : notnull
+        //  {
+        //      if (act == null) throw new ArgumentNullException(nameof(act));
+
+        //      var serviceCollection = new ServiceCollection();
+        //      var mocksByType = new Dictionary<Type, Mock>();
+
+        //      serviceCollection.AddMocksFor<T>((t) =>
+        //      {
+        //          RegisterMock(serviceCollection, t, mocksByType);
+        //      });
+
+        //      var serviceProvider = serviceCollection.BuildServiceProvider();
+
+        //      T service = serviceProvider.GetRequiredService<T>();
+
+        //      if (configureServices != null)
+        //      {
+        //          configureServices(serviceCollection);
+        //      }
+
+        //      if (act != null)
+        //      {
+        //          act(service);
+        //      }
+
+        //      return new(
+        //          serviceCollection,
+        //          serviceProvider,
+        //          mocksByType,
+        //          service,
+        //          act,
+        //          //act ?? (async (a) => { return Task.FromResult<T>(default(T)); }),
+        //          (container) => { },
+        //          (result, container) => { });
+        //  }
 
         public static Task PerformTest<TResult, TManager>(
             this Func<TManager, Task<TResult>> act,
-            Action<MockContainer<TManager>> arrange,
-            Action<TResult, MockContainer<TManager>> assert) where TManager : notnull
+            Action<MockContainer<TManager, TResult>> arrange,
+            Action<TResult, MockContainer<TManager, TResult>> assert) where TManager : notnull
             =>
             act == null ? throw new ArgumentNullException(nameof(act)) :
             assert == null ? throw new ArgumentNullException(nameof(assert)) :
@@ -75,7 +124,7 @@ namespace Moqesq
 
         public static Task PerformTest<TResult, TManager>(
             this Func<TManager, Task<TResult>> act,
-            Action<TResult, MockContainer<TManager>> assert) 
+            Action<TResult, MockContainer<TManager, TResult>> assert)
              where TManager : notnull
             =>
             act == null ? throw new ArgumentNullException(nameof(act)) :
@@ -111,12 +160,12 @@ namespace Moqesq
         }
 
         private static async Task PerformTest<TResult, TManager>(
-            Action<MockContainer<TManager>>? arrange,
+            Action<MockContainer<TManager, TResult>>? arrange,
             Func<TManager, Task<TResult>> act,
-            Action<TResult, MockContainer<TManager>> assert
+            Action<TResult, MockContainer<TManager, TResult>> assert
             ) where TManager : notnull
         {
-            var mockContainer = FromCtors<TManager>();
+            var mockContainer = FromCtors<TManager, TResult>();
             arrange?.Invoke(mockContainer);
 
             var response = await act(mockContainer.Instance).ConfigureAwait(false);

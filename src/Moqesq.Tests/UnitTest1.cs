@@ -12,7 +12,7 @@ namespace Moqesq.Tests
         [TestMethod]
         public void TestMethod1()
         {
-            Ext.FromCtors<SomeClass>(sc => sc.Bla())
+            Ext.FromCtors<SomeClass, string>(sc => sc.Bla())
                 .GetRequiredMock<ITest>()
                 .Verify(t => t.DoTestThing(), Times.Once);
         }
