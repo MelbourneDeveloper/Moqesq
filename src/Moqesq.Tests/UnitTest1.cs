@@ -12,7 +12,7 @@ namespace Moqesq.Tests
         [TestMethod]
         public void TestMethod1()
         {
-            Ext.FromCtors<SomeClass>(sc => sc.Bla())
+            Ext.FromCtors<SomeClass, string>(sc => sc.Bla())
                 .GetRequiredMock<ITest>()
                 .Verify(t => t.DoTestThing(), Times.Once);
         }
@@ -45,7 +45,48 @@ namespace Moqesq.Tests
                 .PerformTest(
                 (result, container) => Assert.AreEqual(null, result));
 
-        }        
+        }
+
+        [TestMethod]
+        public async Task TestMethod5()
+        {
+            await Ext.FromCtors<SomeClass, string>()
+                .Arrange((container) => container.GetRequiredMock<ITest>().Setup(t => t.GetAString()).Returns("123"))
+                .Assert((result, someClass) => Assert.AreEqual("123", result))
+                .Act(sc => Task.FromResult(sc.Bla2()))
+                .Go();
+
+        }
+
+        [TestMethod]
+        public async Task TestMethod6()
+        {
+            await new Func<SomeClass, Task<string>>(sc => Task.FromResult(sc.Bla2())).FromCtors()
+                .Arrange((container) => container.GetRequiredMock<ITest>().Setup(t => t.GetAString()).Returns("123"))
+                .Assert((result, someClass) => Assert.AreEqual("123", result))
+                .Go();
+        }
+
+        [TestMethod]
+        public async Task TestMethod7()
+        {
+            await new Func<SomeClass, Task<string>>(sc => Task.FromResult(sc.Bla2())).FromCtors()
+                .Arrange((container) => container.GetRequiredMock<ITest>().Setup(t => t.GetAString()).Returns("123"))
+                .ConfigureServices((sc) => sc.AddSingleton(""))
+                .Assert((result, someClass) => Assert.AreEqual("123", result))
+                .Go();
+        }
+
+        [TestMethod]
+        public async Task TestMethod8()
+        {
+            async Task<string> LocaFunction(SomeClass someClass) => someClass.Bla2();
+
+            await ((Func<SomeClass, Task<string>>)LocaFunction).FromCtors()
+                .Arrange((container) => container.GetRequiredMock<ITest>().Setup(t => t.GetAString()).Returns("123"))
+                .Assert((result, someClass) => Assert.AreEqual("123", result))
+                .Go();
+        }
     }
 
 }
