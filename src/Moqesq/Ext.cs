@@ -62,14 +62,15 @@ namespace Moqesq
             }
 
             return new(
-                serviceCollection, 
-                serviceProvider, 
-                mocksByType, 
-                service, 
+                serviceCollection,
+                serviceProvider,
+                mocksByType,
+                service,
                 //TODO
-                (a) => throw new NotImplementedException(), 
-                (a) => { }, 
-                (a, b) => { });
+                (a) => throw new NotImplementedException(),
+                (a) => { },
+                (a, b) => { },
+                (a) => { });
         }
 
 
@@ -99,7 +100,8 @@ namespace Moqesq
                 service,
                 act,
                 (a) => { },
-                (a, b) => { });
+                (a, b) => { },
+                configureServices ?? (a => { }));
         }
 
         public static Task PerformTest<TResult, TManager>(

@@ -16,6 +16,7 @@ namespace Moqesq
         internal Func<TService, Task<TResult>> ActFunc;
         internal Action<MockContainer<TService, TResult>> ArrangeFunc;
         internal Action<TResult, MockContainer<TService, TResult>> AssertFunc;
+        internal Action<IServiceCollection> ConfigureServicesFunc;
 
         public TService Instance { get; }
 
@@ -26,7 +27,8 @@ namespace Moqesq
             TService instance,
             Func<TService, Task<TResult>> act,
             Action<MockContainer<TService, TResult>> arrange,
-            Action<TResult, MockContainer<TService, TResult>> assert
+            Action<TResult, MockContainer<TService, TResult>> assert,
+            Action<IServiceCollection> configureServices
             )
         {
             ServiceCollection = serviceCollection;
@@ -36,6 +38,7 @@ namespace Moqesq
             ActFunc = act;
             ArrangeFunc = arrange;
             AssertFunc = assert;
+            ConfigureServicesFunc = configureServices;
         }
 
         public MockContainer<TService, TResult> ReplaceMock<TFrom>(Mock<TFrom> mock) where TFrom : class
@@ -51,7 +54,8 @@ namespace Moqesq
                 Instance,
                 ActFunc,
                 ArrangeFunc,
-                AssertFunc
+                AssertFunc,
+                ConfigureServicesFunc
                 );
         }
 
@@ -67,7 +71,8 @@ namespace Moqesq
                 Instance,
                 act,
                 ArrangeFunc,
-                AssertFunc);
+                AssertFunc,
+                ConfigureServicesFunc);
         }
 
         public MockContainer<TService, TResult> Assert(Action<TResult, MockContainer<TService, TResult>> assert)
@@ -82,7 +87,8 @@ namespace Moqesq
                 Instance,
                 ActFunc,
                 ArrangeFunc,
-                assert);
+                assert,
+                ConfigureServicesFunc);
         }
 
         public MockContainer<TService, TResult> Arrange(Action<MockContainer<TService, TResult>> arrange)
@@ -97,7 +103,26 @@ namespace Moqesq
                 Instance,
                 ActFunc,
                 arrange,
-                AssertFunc);
+                AssertFunc, 
+                ConfigureServicesFunc
+                );
+        }
+
+        public MockContainer<TService, TResult> ConfigureServices(Action<IServiceCollection> configureServices)
+        {
+            var serviceCollection = ServiceCollection.Clone();
+
+            return new MockContainer<TService, TResult>(
+                serviceCollection,
+                serviceCollection.BuildServiceProvider(),
+                //Ok to pass reference?
+                MocksByType,
+                Instance,
+                ActFunc,
+                ArrangeFunc,
+                AssertFunc,
+                configureServices
+                );
         }
 
         public Mock<TMock> GetRequiredMock<TMock>() where TMock : class

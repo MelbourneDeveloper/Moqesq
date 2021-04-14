@@ -61,8 +61,18 @@ namespace Moqesq.Tests
         [TestMethod]
         public async Task TestMethod6()
         {
-            await new Func<SomeClass, Task<string>> (sc => Task.FromResult(sc.Bla2())).FromCtors()
+            await new Func<SomeClass, Task<string>>(sc => Task.FromResult(sc.Bla2())).FromCtors()
                 .Arrange((container) => container.GetRequiredMock<ITest>().Setup(t => t.GetAString()).Returns("123"))
+                .Assert((result, someClass) => Assert.AreEqual("123", result))
+                .Go();
+        }
+
+        [TestMethod]
+        public async Task TestMethod7()
+        {
+            await new Func<SomeClass, Task<string>>(sc => Task.FromResult(sc.Bla2())).FromCtors()
+                .Arrange((container) => container.GetRequiredMock<ITest>().Setup(t => t.GetAString()).Returns("123"))
+                .ConfigureServices((sc) => sc.AddSingleton(""))
                 .Assert((result, someClass) => Assert.AreEqual("123", result))
                 .Go();
         }
