@@ -5,7 +5,7 @@ Yet another [Moq](https://github.com/moq/moq) extensions library
 Do this:
 ```cs
 [TestMethod]
-public async Task TestMethod6()
+public async Task TestMethod1()
 {
     await new Func<SomeClass, Task<string>>(sc => Task.FromResult(sc.Bla2())).FromCtors()
         .Arrange((container) => container.GetRequiredMock<ITest>().Setup(t => t.GetAString()).Returns("123"))
