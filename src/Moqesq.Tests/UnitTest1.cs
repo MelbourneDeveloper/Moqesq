@@ -51,9 +51,9 @@ namespace Moqesq.Tests
         public async Task TestMethod5()
         {
             await Ext.FromCtors<SomeClass, string>()
-                .Assert((result, someClass) => someClass.GetRequiredMock<ITest>()
-                .Verify(t => t.DoTestThing(), Times.Once))
-                .Act(sc => Task.FromResult<string>(sc.Bla2()))
+                .Arrange((container) => container.GetRequiredMock<ITest>().Setup(t => t.GetAString()).Returns("123"))
+                .Assert((result, someClass) => Assert.AreEqual("123", result))
+                .Act(sc => Task.FromResult(sc.Bla2()))
                 .Go();
 
         }
