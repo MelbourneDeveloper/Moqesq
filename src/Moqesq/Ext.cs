@@ -73,45 +73,34 @@ namespace Moqesq
         }
 
 
-        //  public static MockContainer<T, TResult> FromCtors<T, TResult>(
-        //Func<T, Task<TResult>> act,
-        //Action<IServiceCollection>? configureServices = null
-        //) where T : notnull
-        //  {
-        //      if (act == null) throw new ArgumentNullException(nameof(act));
+        public static MockContainer<TService, TResult> FromCtors<TService, TResult>(this Func<TService, Task<TResult>> act, Action<IServiceCollection>? configureServices = null) where TService : notnull
+        {
+            var serviceCollection = new ServiceCollection();
+            var mocksByType = new Dictionary<Type, Mock>();
 
-        //      var serviceCollection = new ServiceCollection();
-        //      var mocksByType = new Dictionary<Type, Mock>();
+            serviceCollection.AddMocksFor<TService>((t) =>
+            {
+                RegisterMock(serviceCollection, t, mocksByType);
+            });
 
-        //      serviceCollection.AddMocksFor<T>((t) =>
-        //      {
-        //          RegisterMock(serviceCollection, t, mocksByType);
-        //      });
+            var serviceProvider = serviceCollection.BuildServiceProvider();
 
-        //      var serviceProvider = serviceCollection.BuildServiceProvider();
+            TService service = serviceProvider.GetRequiredService<TService>();
 
-        //      T service = serviceProvider.GetRequiredService<T>();
+            if (configureServices != null)
+            {
+                configureServices(serviceCollection);
+            }
 
-        //      if (configureServices != null)
-        //      {
-        //          configureServices(serviceCollection);
-        //      }
-
-        //      if (act != null)
-        //      {
-        //          act(service);
-        //      }
-
-        //      return new(
-        //          serviceCollection,
-        //          serviceProvider,
-        //          mocksByType,
-        //          service,
-        //          act,
-        //          //act ?? (async (a) => { return Task.FromResult<T>(default(T)); }),
-        //          (container) => { },
-        //          (result, container) => { });
-        //  }
+            return new(
+                serviceCollection,
+                serviceProvider,
+                mocksByType,
+                service,
+                act,
+                (a) => { },
+                (a, b) => { });
+        }
 
         public static Task PerformTest<TResult, TManager>(
             this Func<TManager, Task<TResult>> act,
