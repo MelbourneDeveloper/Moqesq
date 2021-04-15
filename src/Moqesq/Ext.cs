@@ -136,6 +136,15 @@ namespace Moqesq
 
             return container;
         }
+
+        public static MockContainer<T, TResult> SetupResult<T, TResult, TMock>(this MockContainer<T, TResult> container, Expression<Func<TMock, TResult>> expression, TResult result) where TMock : class
+        {
+            if (container == null) throw new ArgumentNullException(nameof(container));
+
+            container.GetRequiredMock<TMock>().Setup(expression).Returns(result);
+
+            return container;
+        }
         #endregion Public Methods
 
         #region Internal Methods

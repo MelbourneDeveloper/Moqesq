@@ -134,7 +134,7 @@ namespace Moqesq.Tests
         [TestMethod]
         public Task TestShouldEqual()
         => new Func<SomeClass, Task<string>>(sc => sc.GetTheString()).FromCtors()
-                .Arrange((container) => container.SetupResult<ITest1,string>(t => t.GetAString(), "123"))
+                .SetupResult<SomeClass, string, ITest1>(t => t.GetAString(), "123")
                 .Assert((result, someClass) => result.ShouldEqual("123"))
                 .Go();
     }
