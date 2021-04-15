@@ -106,6 +106,8 @@ namespace Moqesq.Tests
         {
             //Arrange
 
+            const int expectedResult = 345;
+
             //Create the mocks and services and put them in the container
             var serviceCollection = new ServiceCollection()
                 .AddMocksFor<SomeClass>()
@@ -117,7 +119,7 @@ namespace Moqesq.Tests
             //Get the mock and do setup
             serviceProvider.GetRequiredService<Mock<ITest2>>()
                 .Setup(t => t.GetInt())
-                .Returns(Task.FromResult(345));
+                .Returns(Task.FromResult(expectedResult));
 
             //Act
             var result = await serviceProvider
@@ -125,7 +127,7 @@ namespace Moqesq.Tests
                 .GetTheInt();
 
             //Assert
-            Assert.AreEqual(345, result);
+            Assert.AreEqual(expectedResult, result);
         }
     }
 
