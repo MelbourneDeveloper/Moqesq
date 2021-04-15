@@ -1,6 +1,6 @@
 # Moqesq
 
-Yet another [Moq](https://github.com/moq/moq) extensions library. Nuget [here](https://www.nuget.org/packages/Moqesq)
+Yet another [Moq](https://github.com/moq/moq) extensions library. Nuget [here](https://www.nuget.org/packages/Moqesq). Samples [here](https://github.com/MelbourneDeveloper/Moqesq/blob/b65585d05df6cdead69009baf37b36975c7628df/src/Moqesq.Tests/UnitTest1.cs#L10).
 
 Do this:
 ```cs
