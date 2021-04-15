@@ -29,7 +29,7 @@ namespace Moqesq.Tests
 
         [TestMethod]
         public void TestMethod3()
-        => new Func<SomeClass, Task<string>>((someClass) => someClass.Bla2())
+        => new Func<SomeClass, Task<string>>((someClass) => someClass.GetTheString())
                 .PerformTest(
                 (container) => container.GetRequiredMock<ITest1>().Setup(t => t.GetAString()).Returns("123"),
                 (result, container) => Assert.AreEqual("123", result));
@@ -37,7 +37,7 @@ namespace Moqesq.Tests
         [TestMethod]
         public void TestMethod4()
         => new Func<SomeClass, Task<string>>((someClass)
-                => someClass.Bla2())
+                => someClass.GetTheString())
                 .PerformTest(
                 (result, container) => Assert.AreEqual(null, result));
 
@@ -46,12 +46,12 @@ namespace Moqesq.Tests
         => Ext.FromCtors<SomeClass, string>()
                 .Arrange((container) => container.GetRequiredMock<ITest1>().Setup(t => t.GetAString()).Returns("123"))
                 .Assert((result, someClass) => Assert.AreEqual("123", result))
-                .Act(sc => sc.Bla2())
+                .Act(sc => sc.GetTheString())
                 .Go();
 
         [TestMethod]
         public Task TestMethod6()
-        => new Func<SomeClass, Task<string>>(sc => sc.Bla2()).FromCtors()
+        => new Func<SomeClass, Task<string>>(sc => sc.GetTheString()).FromCtors()
                 .Arrange((container) => container.GetRequiredMock<ITest1>().Setup(t => t.GetAString()).Returns("123"))
                 .Assert((result, someClass) => Assert.AreEqual("123", result))
                 .Go();
@@ -60,7 +60,7 @@ namespace Moqesq.Tests
         [TestMethod]
         public Task TestMethod8()
         {
-            Task<string> LocaFunction(SomeClass someClass) => someClass.Bla2();
+            Task<string> LocaFunction(SomeClass someClass) => someClass.GetTheString();
 
             return ((Func<SomeClass, Task<string>>)LocaFunction).FromCtors()
                 .Arrange((container) => container.GetRequiredMock<ITest1>().Setup(t => t.GetAString()).Returns("123"))
@@ -70,7 +70,7 @@ namespace Moqesq.Tests
 
         [TestMethod]
         public Task TestMethod()
-        => new Func<SomeClass, Task<string>>(sc => sc.Bla2()).FromCtors()
+        => new Func<SomeClass, Task<string>>(sc => sc.GetTheString()).FromCtors()
                 .Arrange((container) => container.GetRequiredMock<ITest1>().Setup(t => t.GetAString()).Returns("123"))
                 .Assert((result, someClass) => Assert.AreEqual("123", result))
                 .Go();
@@ -95,7 +95,7 @@ namespace Moqesq.Tests
                 testMock5.Object);
 
             //Act
-            var result = await someClass.Bla2();
+            var result = await someClass.GetTheString();
 
             //Assert
             Assert.AreEqual("123", result);
