@@ -3,6 +3,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Moqesq
@@ -15,7 +16,7 @@ namespace Moqesq
         public static IServiceCollection AddMocksFor<T>(this IServiceCollection serviceCollection, Action<Type>? foreachType = null)
         => AddMocksFor<T, T>(serviceCollection, foreachType);
 
-        public static IServiceCollection AddMocksFor<TInterface,T>(this IServiceCollection serviceCollection, Action<Type>? foreachType = null)
+        public static IServiceCollection AddMocksFor<TInterface, T>(this IServiceCollection serviceCollection, Action<Type>? foreachType = null)
         {
             if (serviceCollection == null) throw new ArgumentNullException(nameof(serviceCollection));
 
@@ -80,7 +81,6 @@ namespace Moqesq
                 (a, b) => { });
         }
 
-
         public static MockContainer<TService, TResult> FromCtors<TService, TResult>(this Func<TService, Task<TResult>> act, Action<IServiceCollection>? configureServices = null) where TService : notnull
         {
             var serviceCollection = new ServiceCollection();
@@ -128,6 +128,14 @@ namespace Moqesq
             assert == null ? throw new ArgumentNullException(nameof(assert)) :
             PerformTest(null, act, assert);
 
+        public static MockContainer SetupResult<TMock, TResult>(this MockContainer container, Expression<Func<TMock, TResult>> expression, TResult result) where TMock : class
+        {
+            if (container == null) throw new ArgumentNullException(nameof(container));
+
+            container.GetRequiredMock<TMock>().Setup(expression).Returns(result);
+
+            return container;
+        }
         #endregion Public Methods
 
         #region Internal Methods

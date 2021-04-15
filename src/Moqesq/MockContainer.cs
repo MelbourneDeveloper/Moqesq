@@ -8,11 +8,25 @@ using System.Threading.Tasks;
 
 namespace Moqesq
 {
-    public class MockContainer<TService, TResult>
+    public class MockContainer
+    {
+        internal IDictionary<Type, Mock> MocksByType { get; }
+
+        internal MockContainer(
+       IDictionary<Type, Mock> mocksByType
+       ) 
+        {
+            MocksByType = mocksByType.ToImmutableDictionary();
+        }
+
+        public Mock<TMock> GetRequiredMock<TMock>() where TMock : class
+    => (Mock<TMock>)MocksByType[typeof(TMock)];
+    }
+
+    public class MockContainer<TService, TResult> : MockContainer
     {
         internal IServiceCollection ServiceCollection { get; }
         internal IServiceProvider ServiceProvider { get; }
-        internal IDictionary<Type, Mock> MocksByType { get; }
 
         internal Func<TService, Task<TResult>> ActFunc;
         internal Action<MockContainer<TService, TResult>> ArrangeFunc;
@@ -30,11 +44,10 @@ namespace Moqesq
             Action<MockContainer<TService, TResult>> arrange,
             Action<TResult, MockContainer<TService, TResult>> assert
             //Action<IServiceCollection> configureServices
-            )
+            ) : base(mocksByType.ToImmutableDictionary())
         {
             ServiceCollection = serviceCollection;
             ServiceProvider = serviceProvider;
-            MocksByType = mocksByType.ToImmutableDictionary();
             Instance = instance;
             ActFunc = act;
             ArrangeFunc = arrange;
@@ -138,8 +151,7 @@ namespace Moqesq
         //        );
         //}
 
-        public Mock<TMock> GetRequiredMock<TMock>() where TMock : class
-            => (Mock<TMock>)MocksByType[typeof(TMock)];
+
 
         public async Task<TResult> Go()
         {

@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Moqesq.Tests
@@ -131,11 +132,10 @@ namespace Moqesq.Tests
         }
 
         [TestMethod]
-        public Task TestMethoddere()
+        public Task TestShouldEqual()
         => new Func<SomeClass, Task<string>>(sc => sc.GetTheString()).FromCtors()
-                .Arrange((container) => container.GetRequiredMock<ITest1>().Setup(t => t.GetAString()).Returns("123"))
+                .Arrange((container) => container.SetupResult<ITest1,string>(t => t.GetAString(), "123"))
                 .Assert((result, someClass) => result.ShouldEqual("123"))
                 .Go();
     }
-
 }
