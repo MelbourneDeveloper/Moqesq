@@ -14,12 +14,12 @@ namespace Moqesq
 
         internal MockContainer(
        IDictionary<Type, Mock> mocksByType
-       ) 
+       )
         {
             MocksByType = mocksByType.ToImmutableDictionary();
         }
 
-        public Mock<TMock> GetRequiredMock<TMock>() where TMock : class
+        public Mock<TMock> GetMock<TMock>() where TMock : class
     => (Mock<TMock>)MocksByType[typeof(TMock)];
     }
 
@@ -102,6 +102,21 @@ namespace Moqesq
                 assert);
         }
 
+        public MockContainer<TService, TResult> Assert(Action<TResult> assert)
+        {
+            var serviceCollection = ServiceCollection.Clone();
+
+            return new MockContainer<TService, TResult>(
+                serviceCollection,
+                serviceCollection.BuildServiceProvider(),
+                //Ok to pass reference?
+                MocksByType,
+                Instance,
+                ActFunc,
+                ArrangeFunc,
+                (result, b) => assert(result));
+        }
+
         public MockContainer<TService, TResult> Arrange(Action<MockContainer<TService, TResult>> arrange)
         {
             var serviceCollection = ServiceCollection.Clone();
@@ -129,7 +144,7 @@ namespace Moqesq
                 MocksByType,
                 Instance,
                 ActFunc,
-                (a) => a.GetRequiredMock<T>().Setup(arrange),
+                (a) => a.GetMock<T>().Setup(arrange),
                 AssertFunc
                 );
         }

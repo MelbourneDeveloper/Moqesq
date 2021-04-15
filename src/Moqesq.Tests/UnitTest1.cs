@@ -14,7 +14,7 @@ namespace Moqesq.Tests
         public void TestMethod1()
         {
             Ext.FromCtors<SomeClass, string>(sc => sc.Bla())
-                .GetRequiredMock<ITest1>()
+                .GetMock<ITest1>()
                 .Verify(t => t.DoTestThing(), Times.Once);
         }
 
@@ -32,7 +32,7 @@ namespace Moqesq.Tests
         public void TestMethod3()
         => new Func<SomeClass, Task<string>>((someClass) => someClass.GetTheString())
                 .PerformTest(
-                (container) => container.GetRequiredMock<ITest1>().Setup(t => t.GetAString()).Returns("123"),
+                (container) => container.GetMock<ITest1>().Setup(t => t.GetAString()).Returns("123"),
                 (result, container) => Assert.AreEqual("123", result));
 
         [TestMethod]
@@ -45,7 +45,7 @@ namespace Moqesq.Tests
         [TestMethod]
         public Task TestMethod5()
         => Ext.FromCtors<SomeClass, string>()
-                .Arrange((container) => container.GetRequiredMock<ITest1>().Setup(t => t.GetAString()).Returns("123"))
+                .Arrange((container) => container.GetMock<ITest1>().Setup(t => t.GetAString()).Returns("123"))
                 .Assert((result, someClass) => Assert.AreEqual("123", result))
                 .Act(sc => sc.GetTheString())
                 .Go();
@@ -53,7 +53,7 @@ namespace Moqesq.Tests
         [TestMethod]
         public Task TestMethod6()
         => new Func<SomeClass, Task<string>>(sc => sc.GetTheString()).FromCtors()
-                .Arrange((container) => container.GetRequiredMock<ITest1>().Setup(t => t.GetAString()).Returns("123"))
+                .Arrange((container) => container.GetMock<ITest1>().Setup(t => t.GetAString()).Returns("123"))
                 .Assert((result, someClass) => Assert.AreEqual("123", result))
                 .Go();
 
@@ -64,7 +64,7 @@ namespace Moqesq.Tests
             Task<string> LocaFunction(SomeClass someClass) => someClass.GetTheString();
 
             return ((Func<SomeClass, Task<string>>)LocaFunction).FromCtors()
-                .Arrange((container) => container.GetRequiredMock<ITest1>().Setup(t => t.GetAString()).Returns("123"))
+                .Arrange((container) => container.GetMock<ITest1>().Setup(t => t.GetAString()).Returns("123"))
                 .Assert((result, someClass) => Assert.AreEqual("123", result))
                 .Go();
         }
@@ -72,7 +72,7 @@ namespace Moqesq.Tests
         [TestMethod]
         public Task TestMethod()
         => new Func<SomeClass, Task<string>>(sc => sc.GetTheString()).FromCtors()
-                .Arrange((container) => container.GetRequiredMock<ITest1>().Setup(t => t.GetAString()).Returns("123"))
+                .Arrange((container) => container.GetMock<ITest1>().Setup(t => t.GetAString()).Returns("123"))
                 .Assert((result, someClass) => Assert.AreEqual("123", result))
                 .Go();
 
@@ -136,6 +136,13 @@ namespace Moqesq.Tests
         => new Func<SomeClass, Task<string>>(sc => sc.GetTheString()).FromCtors()
                 .SetupResult<SomeClass, string, ITest1>(t => t.GetAString(), "123")
                 .Assert((result, someClass) => result.ShouldEqual("123"))
+                .Go();
+
+        [TestMethod]
+        public Task TestShouldEqual2()
+        => new Func<SomeClass, Task<string>>(sc => sc.GetTheString()).FromCtors()
+                .SetupResult((c) => c.GetMock<ITest1>(), t => t.GetAString(), "123")
+                .Assert((result) => result.ShouldEqual("123"))
                 .Go();
     }
 }

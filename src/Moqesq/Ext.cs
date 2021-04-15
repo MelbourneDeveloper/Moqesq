@@ -128,20 +128,21 @@ namespace Moqesq
             assert == null ? throw new ArgumentNullException(nameof(assert)) :
             PerformTest(null, act, assert);
 
-        public static MockContainer SetupResult<TMock, TResult>(this MockContainer container, Expression<Func<TMock, TResult>> expression, TResult result) where TMock : class
-        {
-            if (container == null) throw new ArgumentNullException(nameof(container));
-
-            container.GetRequiredMock<TMock>().Setup(expression).Returns(result);
-
-            return container;
-        }
-
         public static MockContainer<T, TResult> SetupResult<T, TResult, TMock>(this MockContainer<T, TResult> container, Expression<Func<TMock, TResult>> expression, TResult result) where TMock : class
         {
             if (container == null) throw new ArgumentNullException(nameof(container));
 
-            container.GetRequiredMock<TMock>().Setup(expression).Returns(result);
+            container.GetMock<TMock>().Setup(expression).Returns(result);
+
+            return container;
+        }
+
+        public static MockContainer<T, TResult> SetupResult<T, TResult, TMock>(this MockContainer<T, TResult> container, Func<MockContainer<T, TResult>,Mock<TMock>> mock, Expression<Func<TMock, TResult>> expression, TResult result) where TMock : class
+        {
+            if (container == null) throw new ArgumentNullException(nameof(container));
+            if (mock == null) throw new ArgumentNullException(nameof(mock));
+
+            mock().Setup(expression).Returns(result);
 
             return container;
         }
