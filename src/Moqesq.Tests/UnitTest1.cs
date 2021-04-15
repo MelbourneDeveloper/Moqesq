@@ -129,6 +129,13 @@ namespace Moqesq.Tests
             //Assert
             Assert.AreEqual(expectedResult, result);
         }
+
+        [TestMethod]
+        public Task TestMethoddere()
+        => new Func<SomeClass, Task<string>>(sc => sc.GetTheString()).FromCtors()
+                .Arrange((container) => container.GetRequiredMock<ITest1>().Setup(t => t.GetAString()).Returns("123"))
+                .Assert((result, someClass) => result.ShouldEqual("123"))
+                .Go();
     }
 
 }

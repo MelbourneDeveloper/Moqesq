@@ -30,7 +30,6 @@ namespace Moqesq.Tests
             test1.DoTestThing();
         }
 
-
         public Task<int> GetTheInt() => test3.GetInt();
 
         public Task<string> GetTheString() => Task.FromResult(test1.GetAString());
