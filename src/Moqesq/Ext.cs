@@ -13,7 +13,12 @@ namespace Moqesq
         #region Public Methods
 
         public static IServiceCollection AddMocksFor<T>(this IServiceCollection serviceCollection, Action<Type>? foreachType = null)
+        => AddMocksFor<T, T>(serviceCollection, foreachType);
+
+        public static IServiceCollection AddMocksFor<TInterface,T>(this IServiceCollection serviceCollection, Action<Type>? foreachType = null)
         {
+            if (serviceCollection == null) throw new ArgumentNullException(nameof(serviceCollection));
+
             typeof(T)
                 .GetConstructors()
                 .SelectMany(c => c.GetParameters())
@@ -26,13 +31,16 @@ namespace Moqesq
                     serviceCollection.AddSingleton(t, mock.Object);
                 }));
 
-            serviceCollection.AddSingleton(typeof(T));
+            var serviceDescriptor = serviceCollection.FirstOrDefault(sc => sc.ServiceType == typeof(TInterface));
+            if (serviceDescriptor != null) serviceCollection.Remove(serviceDescriptor);
+
+            serviceCollection.AddSingleton(typeof(TInterface), typeof(T));
 
             return serviceCollection;
         }
 
         public static ServiceProvider BuildServiceProviderFor<T>(this IServiceCollection serviceCollection)
-        => serviceCollection.AddMocksFor<T>().BuildServiceProvider();
+        => serviceCollection.AddMocksFor<T, T>().BuildServiceProvider();
 
         public static ServiceProvider BuildServiceProviderFor<T>()
         => new ServiceCollection().BuildServiceProviderFor<T>();
@@ -42,7 +50,7 @@ namespace Moqesq
             var serviceCollection = new ServiceCollection();
             var mocksByType = new Dictionary<Type, Mock>();
 
-            serviceCollection.AddMocksFor<T>((t) =>
+            serviceCollection.AddMocksFor<T, T>((t) =>
             {
                 RegisterMock(serviceCollection, t, mocksByType);
             });
@@ -78,7 +86,7 @@ namespace Moqesq
             var serviceCollection = new ServiceCollection();
             var mocksByType = new Dictionary<Type, Mock>();
 
-            serviceCollection.AddMocksFor<TService>((t) =>
+            serviceCollection.AddMocksFor<TService, TService>((t) =>
             {
                 RegisterMock(serviceCollection, t, mocksByType);
             });

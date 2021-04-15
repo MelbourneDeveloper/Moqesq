@@ -109,7 +109,7 @@ namespace Moqesq.Tests
             //Create the mocks and services and put them in the container
             var serviceCollection = new ServiceCollection()
                 .AddMocksFor<SomeClass>()
-                .AddMocksFor<Test3>();
+                .AddMocksFor<ITest3, Test3>();
 
             //Build the service provider
             var serviceProvider = serviceCollection.BuildServiceProvider();
