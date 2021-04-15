@@ -41,7 +41,38 @@ public async Task TestMethodVerbose()
     Assert.AreEqual("123", result);
 }
 ```
-
 Notice how much code is necessary to mock many dependencies - even when you are not interested them.
 
+Perform an integration test on two classes (`SomeClass` and `Test3`). `SomeClass` depends on `ITest3` and `Test3` depends on `ITest2` which we mock. The extensions automatically create the mocks.
+
+```cs
+[TestMethod]
+public async Task TestIntegration()
+{
+    //Arrange
+
+    const int expectedResult = 345;
+
+    //Create the mocks and services and put them in the container
+    var serviceCollection = new ServiceCollection()
+        .AddMocksFor<SomeClass>()
+        .AddMocksFor<ITest3, Test3>();
+
+    //Build the service provider
+    var serviceProvider = serviceCollection.BuildServiceProvider();
+
+    //Get the mock and do setup
+    serviceProvider.GetRequiredService<Mock<ITest2>>()
+        .Setup(t => t.GetInt())
+        .Returns(Task.FromResult(expectedResult));
+
+    //Act
+    var result = await serviceProvider
+        .GetRequiredService<SomeClass>()
+        .GetTheInt();
+
+    //Assert
+    Assert.AreEqual(expectedResult, result);
+}
+```
 
