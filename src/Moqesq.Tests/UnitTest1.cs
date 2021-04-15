@@ -10,6 +10,8 @@ namespace Moqesq.Tests
     [TestClass]
     public class UnitTest1
     {
+        Func<SomeClass, Task<string>> Act = new Func<SomeClass, Task<string>>(sc => sc.GetTheString());
+
         [TestMethod]
         public void TestMethod1()
         {
@@ -52,7 +54,7 @@ namespace Moqesq.Tests
 
         [TestMethod]
         public Task TestMethod6()
-        => new Func<SomeClass, Task<string>>(sc => sc.GetTheString()).FromCtors()
+        => Act.FromCtors()
                 .Arrange((container) => container.GetMock<ITest1>().Setup(t => t.GetAString()).Returns("123"))
                 .Assert((result, someClass) => Assert.AreEqual("123", result))
                 .Go();
@@ -71,10 +73,10 @@ namespace Moqesq.Tests
 
         [TestMethod]
         public Task TestMethod()
-        => new Func<SomeClass, Task<string>>(sc => sc.GetTheString()).FromCtors()
-                .Arrange((container) => container.GetMock<ITest1>().Setup(t => t.GetAString()).Returns("123"))
-                .Assert((result, someClass) => Assert.AreEqual("123", result))
-                .Go();
+        => Act.FromCtors()
+        .Arrange((container) => container.GetMock<ITest1>().Setup(t => t.GetAString()).Returns("123"))
+        .Assert((result, someClass) => Assert.AreEqual("123", result))
+        .Go();
 
         [TestMethod]
         public async Task TestMethodVerbose()
@@ -133,16 +135,18 @@ namespace Moqesq.Tests
 
         [TestMethod]
         public Task TestShouldEqual()
-        => new Func<SomeClass, Task<string>>(sc => sc.GetTheString()).FromCtors()
+        => Act.FromCtors()
                 .SetupResult<SomeClass, string, ITest1>(t => t.GetAString(), "123")
                 .Assert((result, someClass) => result.ShouldEqual("123"))
                 .Go();
 
+
         [TestMethod]
         public Task TestShouldEqual2()
-        => new Func<SomeClass, Task<string>>(sc => sc.GetTheString()).FromCtors()
-                .SetupResult((c) => c.GetMock<ITest1>(), t => t.GetAString(), "123")
-                .Assert((result) => result.ShouldEqual("123"))
-                .Go();
+        => Act.FromCtors()
+        .SetupResult((c) => c.GetMock<ITest1>(), t => t.GetAString(), "123")
+        .Assert((result) => result.ShouldEqual("123"))
+        .Go();
+        
     }
 }
