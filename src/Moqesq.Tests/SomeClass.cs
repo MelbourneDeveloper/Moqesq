@@ -1,19 +1,35 @@
-﻿namespace Moqesq.Tests
+﻿using System.Threading.Tasks;
+
+namespace Moqesq.Tests
 {
     public class SomeClass
     {
-        ITest test;
+        ITest1 test1;
+        ITest2 test2;
+        ITest3 test3;
+        ITest4 test4;
+        ITest5 test5;
 
-        public SomeClass(ITest test)
+        public SomeClass(
+            ITest1 test1,
+            ITest2 test2,
+            ITest3 test3,
+            ITest4 test4,
+            ITest5 test5
+            )
         {
-            this.test = test;
+            this.test1 = test1;
+            this.test2 = test2;
+            this.test3 = test3;
+            this.test4 = test4;
+            this.test5 = test5;
         }
 
         public void Bla()
         {
-            test.DoTestThing();
+            test1.DoTestThing();
         }
 
-        public string Bla2() => test.GetAString();
+        public Task<string> Bla2() => Task.FromResult(test1.GetAString());
     }
 }
