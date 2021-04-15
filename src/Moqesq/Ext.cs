@@ -142,7 +142,7 @@ namespace Moqesq
             if (container == null) throw new ArgumentNullException(nameof(container));
             if (mock == null) throw new ArgumentNullException(nameof(mock));
 
-            mock().Setup(expression).Returns(result);
+            mock(container).Setup(expression).Returns(result);
 
             return container;
         }
