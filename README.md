@@ -1,6 +1,6 @@
 # Moqesq
 
-Yet another [Moq](https://github.com/moq/moq) extensions library
+Yet another [Moq](https://github.com/moq/moq) extensions library. Nuget [here](https://www.nuget.org/packages/Moqesq)
 
 Do this:
 ```cs
@@ -44,4 +44,4 @@ public async Task TestMethodVerbose()
 
 Notice how much code is necessary to mock many dependencies - even when you are not interested them.
 
-Nuget here: https://www.nuget.org/packages/Moqesq
+
