@@ -101,6 +101,32 @@ namespace Moqesq.Tests
             Assert.AreEqual("123", result);
         }
 
+        [TestMethod]
+        public async Task TestIntegration()
+        {
+            //Arrange
+
+            //Create the mocks and services and put them in the container
+            var serviceCollection = new ServiceCollection()
+                .AddMocksFor<SomeClass>()
+                .AddMocksFor<Test3>();
+
+            //Build the service provider
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+
+            //Get the mock and do setup
+            serviceProvider.GetRequiredService<Mock<ITest2>>()
+                .Setup(t => t.GetInt())
+                .Returns(Task.FromResult(345));
+
+            //Act
+            var result = await serviceProvider
+                .GetRequiredService<SomeClass>()
+                .GetTheInt();
+
+            //Assert
+            Assert.AreEqual(345, result);
+        }
     }
 
 }
