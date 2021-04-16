@@ -41,7 +41,7 @@ public async Task TestMethodVerbose()
     Assert.AreEqual("123", result);
 }
 ```
-Notice how much code is necessary to mock many dependencies - even when you are not interested them.
+Notice how much code is necessary to mock many dependencies - even when you are not interested them. Whenever the dependency list changes, the unit tests break. This solves that problem. 
 
 Perform an integration test on two classes (`SomeClass` and `Test3`). `SomeClass` depends on `ITest3` and `Test3` depends on `ITest2` which we mock. The extensions automatically create the mocks.
 
