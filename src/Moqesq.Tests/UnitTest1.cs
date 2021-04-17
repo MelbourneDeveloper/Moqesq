@@ -15,9 +15,10 @@ namespace Moqesq.Tests
         [TestMethod]
         public void TestMethod1()
         {
-            Ext.FromCtors<SomeClass, string>(sc => sc.Bla())
-                .GetMock<ITest1>()
-                .Verify(t => t.DoTestThing(), Times.Once);
+            Ext.Go<SomeClass, string>(
+                sc => sc.Bla2(),
+                (result, container) => container.GetMock<ITest1>().Verify(t => t.DoTestThing(), Times.Once));
+
         }
 
         [TestMethod]
@@ -33,7 +34,7 @@ namespace Moqesq.Tests
         [TestMethod]
         public void TestMethod3()
         => new Func<SomeClass, Task<string>>((someClass) => someClass.GetTheString())
-                .PerformTest(
+                .Go(
                 (container) => container.GetMock<ITest1>().Setup(t => t.GetAString()).Returns("123"),
                 (result, container) => Assert.AreEqual("123", result));
 
@@ -41,7 +42,7 @@ namespace Moqesq.Tests
         public void TestMethod4()
         => new Func<SomeClass, Task<string>>((someClass)
                 => someClass.GetTheString())
-                .PerformTest(
+                .Go(
                 (result, container) => Assert.AreEqual(null, result));
 
         [TestMethod]
@@ -147,6 +148,6 @@ namespace Moqesq.Tests
         .SetupResult((c) => c.GetMock<ITest1>(), t => t.GetAString(), "123")
         .Assert((result) => result.ShouldEqual("123"))
         .Go();
-        
+
     }
 }

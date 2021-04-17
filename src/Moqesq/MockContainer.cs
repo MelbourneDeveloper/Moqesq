@@ -13,14 +13,14 @@ namespace Moqesq
         internal IDictionary<Type, Mock> MocksByType { get; }
 
         internal MockContainer(
-       IDictionary<Type, Mock> mocksByType
-       )
+            IDictionary<Type, Mock> mocksByType
+            )
         {
             MocksByType = mocksByType.ToImmutableDictionary();
         }
 
         public Mock<TMock> GetMock<TMock>() where TMock : class
-    => (Mock<TMock>)MocksByType[typeof(TMock)];
+            => (Mock<TMock>)MocksByType[typeof(TMock)];
     }
 
     public class MockContainer<TService, TResult> : MockContainer
@@ -31,7 +31,6 @@ namespace Moqesq
         internal Func<TService, Task<TResult>> ActFunc;
         internal Action<MockContainer<TService, TResult>> ArrangeFunc;
         internal Action<TResult, MockContainer<TService, TResult>> AssertFunc;
-        //internal Action<IServiceCollection> ConfigureServicesFunc;
 
         public TService Instance { get; }
 
@@ -43,7 +42,6 @@ namespace Moqesq
             Func<TService, Task<TResult>> act,
             Action<MockContainer<TService, TResult>> arrange,
             Action<TResult, MockContainer<TService, TResult>> assert
-            //Action<IServiceCollection> configureServices
             ) : base(mocksByType.ToImmutableDictionary())
         {
             ServiceCollection = serviceCollection;
@@ -52,7 +50,6 @@ namespace Moqesq
             ActFunc = act;
             ArrangeFunc = arrange;
             AssertFunc = assert;
-            //ConfigureServicesFunc = configureServices;
         }
 
         public MockContainer<TService, TResult> ReplaceMock<TFrom>(Mock<TFrom> mock) where TFrom : class
@@ -148,25 +145,6 @@ namespace Moqesq
                 AssertFunc
                 );
         }
-
-        //public MockContainer<TService, TResult> ConfigureServices(Action<IServiceCollection> configureServices)
-        //{
-        //    var serviceCollection = ServiceCollection.Clone();
-
-        //    return new MockContainer<TService, TResult>(
-        //        serviceCollection,
-        //        serviceCollection.BuildServiceProvider(),
-        //        //Ok to pass reference?
-        //        MocksByType,
-        //        Instance,
-        //        ActFunc,
-        //        ArrangeFunc,
-        //        AssertFunc,
-        //        configureServices
-        //        );
-        //}
-
-
 
         public async Task<TResult> Go()
         {
