@@ -20,6 +20,32 @@ namespace Moqesq.Tests
         (container) => container.Verify<ITest1>(t => t.DoTestTask(), Times.Once()));
 
         [TestMethod]
+        public async Task TestMethod1Verbose()
+        {
+            //Arrange
+            var testMock1 = new Mock<ITest1>();
+            var testMock2 = new Mock<ITest2>();
+            var testMock3 = new Mock<ITest3>();
+            var testMock4 = new Mock<ITest4>();
+            var testMock5 = new Mock<ITest5>();
+
+            _ = testMock1.Setup(t => t.GetAString()).Returns("123");
+
+            var someClass = new SomeClass(
+                testMock1.Object,
+                testMock2.Object,
+                testMock3.Object,
+                testMock4.Object,
+                testMock5.Object);
+
+            //Act
+            var result = await someClass.Bla2();
+
+            //Assert
+            testMock1.Verify(t => t.DoTestTask(), Times.Once());
+        }
+
+        [TestMethod]
         public void TestMethod2()
         {
             var serviceProvider = Ext.BuildServiceProviderFor<SomeClass>();
