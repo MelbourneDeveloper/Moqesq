@@ -43,6 +43,48 @@ public async Task TestMethodVerbose()
 ```
 Notice how much code is necessary to mock many dependencies - even when you are not interested them. Whenever the dependency list changes, the unit tests break. This solves that problem. 
 
+Or...
+
+```cs
+[TestMethod]
+public void TestMethod1()
+=> Ext.Go<SomeClass, string>(
+//Act
+sc => sc.Bla2(),
+//Assert
+(container) => container.Verify<ITest1>(t => t.DoTestTask(), Times.Once()));
+```
+
+Instead of
+
+```cs
+[TestMethod]
+public async Task TestMethod1Verbose()
+{
+    //Arrange
+    var testMock1 = new Mock<ITest1>();
+    var testMock2 = new Mock<ITest2>();
+    var testMock3 = new Mock<ITest3>();
+    var testMock4 = new Mock<ITest4>();
+    var testMock5 = new Mock<ITest5>();
+
+    _ = testMock1.Setup(t => t.GetAString()).Returns("123");
+
+    var someClass = new SomeClass(
+        testMock1.Object,
+        testMock2.Object,
+        testMock3.Object,
+        testMock4.Object,
+        testMock5.Object);
+
+    //Act
+    var result = await someClass.Bla2();
+
+    //Assert
+    testMock1.Verify(t => t.DoTestTask(), Times.Once());
+}
+```
+
 Perform an integration test on two classes (`SomeClass` and `Test3`). `SomeClass` depends on `ITest3` and `Test3` depends on `ITest2` which we mock. The extensions automatically create the mocks.
 
 ```cs
