@@ -30,10 +30,10 @@ namespace Moqesq.Tests
             test1.DoTestThing();
         }
 
-        public Task<string> Bla2()
+        public async Task<string> Bla2()
         {
-            test1.DoTestThing();
-            return Task.FromResult("SomeString");
+            await test1.DoTestTask();
+            return "SomeString";
         }
 
         public Task<int> GetTheInt() => test3.GetInt();

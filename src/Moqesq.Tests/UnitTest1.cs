@@ -14,12 +14,12 @@ namespace Moqesq.Tests
 
         [TestMethod]
         public void TestMethod1()
-        {
-            Ext.Go<SomeClass, string>(
-                sc => sc.Bla2(),
-                (result, container) => container.GetMock<ITest1>().Verify(t => t.DoTestThing(), Times.Once));
-
-        }
+        => Ext.Go<SomeClass, string>( 
+        //Act
+        sc => sc.Bla2(),
+        //Assert
+        (container) => container.Verify<ITest1>(t => t.DoTestTask(), Times.Once()));
+        
 
         [TestMethod]
         public void TestMethod2()

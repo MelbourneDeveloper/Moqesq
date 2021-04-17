@@ -104,6 +104,15 @@ namespace Moqesq
             assert == null ? throw new ArgumentNullException(nameof(assert)) :
             Go(null, act, assert);
 
+        public static Task Go<TService, TResult>(
+            this Func<TService, Task<TResult?>> act,
+            Action<MockContainer<TService, TResult?>> assert)
+             where TService : notnull
+            =>
+            act == null ? throw new ArgumentNullException(nameof(act)) :
+            assert == null ? throw new ArgumentNullException(nameof(assert)) :
+            Go(null, act, (s, r) => assert(r));
+
         public static MockContainer<T, TResult> SetupResult<T, TResult, TMock>(this MockContainer<T, TResult> container, Expression<Func<TMock, TResult>> expression, TResult result) where TMock : class
         {
             if (container == null) throw new ArgumentNullException(nameof(container));
@@ -121,6 +130,21 @@ namespace Moqesq
             mock(container).Setup(expression).Returns(result);
 
             return container;
+        }
+
+        public static MockContainer Verify<TMock>(this MockContainer container, Expression<Func<TMock, Task>> expression, Times? times = default) where TMock : class
+        {
+            if (container == null) throw new ArgumentNullException(nameof(container));
+
+            container.GetMock<TMock>().Verify(expression, (times ?? Times.AtLeastOnce()));
+
+            return container;
+        }
+
+        public static void SetupResult<TMock, TResult>(this Mock<TMock> mock, Expression<Func<TMock, TResult>> expression, TResult result) where TMock : class
+        {
+            if (mock == null) throw new ArgumentNullException(nameof(mock));
+            mock.Setup(expression).Returns(result);
         }
         #endregion Public Methods
 
