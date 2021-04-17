@@ -97,6 +97,15 @@ namespace Moqesq
 
         public static Task Go<TService, TResult>(
             this Func<TService, Task<TResult?>> act,
+            Action<MockContainer<TService, TResult?>> arrange,
+            Action<TResult?> assert) where TService : notnull
+            =>
+            act == null ? throw new ArgumentNullException(nameof(act)) :
+            assert == null ? throw new ArgumentNullException(nameof(assert)) :
+            Go(arrange, act, (result, container) => assert(result));
+
+        public static Task Go<TService, TResult>(
+            this Func<TService, Task<TResult?>> act,
             Action<TResult?, MockContainer<TService, TResult?>> assert)
              where TService : notnull
             =>

@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Moqesq.Tests
@@ -14,12 +13,11 @@ namespace Moqesq.Tests
 
         [TestMethod]
         public void TestMethod1()
-        => Ext.Go<SomeClass, string>( 
+        => Ext.Go<SomeClass, string>(
         //Act
         sc => sc.Bla2(),
         //Assert
         (container) => container.Verify<ITest1>(t => t.DoTestTask(), Times.Once()));
-        
 
         [TestMethod]
         public void TestMethod2()
