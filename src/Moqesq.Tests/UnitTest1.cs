@@ -173,5 +173,24 @@ namespace Moqesq.Tests
         .Assert((result) => result.ShouldEqual("123"))
         .Go();
 
+        [TestMethod]
+        public async Task TestMethod9()
+        {
+            Task<string> LocaFunction(SomeClass someClass) => someClass.GetTheString();
+
+            await ((Func<SomeClass, Task<string>>)LocaFunction).FromCtors()
+                .Arrange((container) => container.SetupResult<SomeClass, string, ITest1>(t => t.GetAString(), "123"))
+                .Assert((result, someClass) => Assert.AreEqual("123", result))
+                .Go();
+        }
+
+        [TestMethod]
+        public async Task TestMethod10()
+        {
+            Task<object> LocaFunction(ConstructorValidationClass constructorValidationClass) => constructorValidationClass.GetValue();
+
+            await ((Func<ConstructorValidationClass, Task<object>>)LocaFunction).FromCtors().Go();
+        }
+
     }
 }
