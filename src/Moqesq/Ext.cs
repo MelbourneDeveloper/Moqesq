@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Moqesq
 {
+
     public static class Ext
     {
 
@@ -16,7 +17,9 @@ namespace Moqesq
         public static IServiceCollection AddMocksFor<T>(this IServiceCollection serviceCollection, Action<Type>? foreachType = null)
         => AddMocksFor<T, T>(serviceCollection, foreachType);
 
-        public static IServiceCollection AddMocksFor<TInterface, T>(this IServiceCollection serviceCollection, Action<Type>? foreachType = null)
+        public static IServiceCollection AddMocksFor<TInterface, T>(
+            this IServiceCollection serviceCollection,
+            Action<Type>? foreachType = null)
         {
             if (serviceCollection == null) throw new ArgumentNullException(nameof(serviceCollection));
 
@@ -57,7 +60,9 @@ namespace Moqesq
         public static MockContainer<TService, TResult?> FromCtors<TService, TResult>() where TService : notnull
         => FromCtors<TService, TResult?>((a) => Task.FromResult<TResult?>(default), null);
 
-        public static MockContainer<TService, TResult?> FromCtors<TService, TResult>(this Func<TService, Task<TResult?>> act, Action<Dictionary<Type, Mock>>? configureServices = null) where TService : notnull
+        public static MockContainer<TService, TResult?> FromCtors<TService, TResult>(
+            this Func<TService, Task<TResult?>> act,
+            Action<MockLookup>? configureServices = null) where TService : notnull
         {
             var serviceCollection = new ServiceCollection();
             var mocksByType = new Dictionary<Type, Mock>();
@@ -71,7 +76,7 @@ namespace Moqesq
 
             if (configureServices != null)
             {
-                configureServices(mocksByType);
+                configureServices(new MockLookup(mocksByType));
             }
 
             TService service = serviceProvider.GetRequiredService<TService>();
