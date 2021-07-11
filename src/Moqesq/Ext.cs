@@ -57,7 +57,7 @@ namespace Moqesq
         public static MockContainer<TService, TResult?> FromCtors<TService, TResult>() where TService : notnull
         => FromCtors<TService, TResult?>((a) => Task.FromResult<TResult?>(default), null);
 
-        public static MockContainer<TService, TResult?> FromCtors<TService, TResult>(this Func<TService, Task<TResult?>> act, Action<IServiceCollection>? configureServices = null) where TService : notnull
+        public static MockContainer<TService, TResult?> FromCtors<TService, TResult>(this Func<TService, Task<TResult?>> act, Action<Dictionary<Type, Mock>>? configureServices = null) where TService : notnull
         {
             var serviceCollection = new ServiceCollection();
             var mocksByType = new Dictionary<Type, Mock>();
@@ -69,12 +69,12 @@ namespace Moqesq
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
-            TService service = serviceProvider.GetRequiredService<TService>();
-
             if (configureServices != null)
             {
-                configureServices(serviceCollection);
+                configureServices(mocksByType);
             }
+
+            TService service = serviceProvider.GetRequiredService<TService>();
 
             return new(
                 serviceCollection,

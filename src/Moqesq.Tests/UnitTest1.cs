@@ -189,7 +189,11 @@ namespace Moqesq.Tests
         {
             Task<object> LocaFunction(ConstructorValidationClass constructorValidationClass) => constructorValidationClass.GetValue();
 
-            await ((Func<ConstructorValidationClass, Task<object>>)LocaFunction).FromCtors().Go();
+            await ((Func<ConstructorValidationClass, Task<object>>)LocaFunction).FromCtors(configureServices: (m) =>
+            {
+                var mock = (Mock<IValueHolder>)m[typeof(IValueHolder)];
+                mock.Setup(v => v.Value).Returns(new object());
+            }).Go();
         }
 
     }
