@@ -199,51 +199,64 @@ namespace Moqesq.Tests
         [TestMethod]
         public async Task TestShouldHave()
         {
-            var a = new A { First = "1", Second = 2 };
-            var b = new B { First = "1", Second = 2 };
-            b.ShouldHave(a);
+            var x = new X { First = "1", Second = 2 };
+            var y = new Y { First = "1", Second = 2 };
+            y.ShouldHave(x);
         }
 
         [TestMethod]
         public async Task TestShouldHave2()
         => 
-        new D { First = "1", Second = 2, E = new E() { First = "2", A = new() { First = "123" } } }
+        new B { First = "1", Second = 2, C = new C() { First = "2", X = new() { First = "123" } } }
         .ShouldHave(
-        new C { First = "1", Second = 2, E = new E() { First = "2", A = new() { First = "123" } } },
-        new List<string> { "E", "A" });
+        new A { First = "1", Second = 2, C = new C() { First = "2", X = new() { First = "123" } } },
+        new List<string> { "C", "X" });
+
+
+        [TestMethod]
+        public async Task TestShouldHave3()
+        {
+            bool RecurseOrCompare(string propertyName, object a, object b)
+            => new List<string> { "C", "X" }.Contains(propertyName) ? a.ShouldHave(b, RecurseOrCompare) : a.Equals(b);
+
+            new B { First = "1", Second = 2, C = new C() { First = "2", X = new() { First = "123" } } }
+            .ShouldHave(
+            new A { First = "1", Second = 2, C = new C() { First = "2", X = new() { First = "123" } } },
+            RecurseOrCompare);
+        }
     }
 
     public class A
     {
         public string First { get; set; }
         public int Second { get; set; }
+        public C C { get; set; }
     }
 
     public class B
     {
         public string First { get; set; }
         public int Second { get; set; }
-        public DateTime Third { get; set; }
+        public C C { get; set; }
     }
 
     public class C
     {
         public string First { get; set; }
-        public int Second { get; set; }
-        public E E { get; set; }
+        public X X { get; set; }
     }
 
-    public class D
+    public class X
     {
         public string First { get; set; }
         public int Second { get; set; }
-        public E E { get; set; }
     }
 
-    public class E
+    public class Y
     {
         public string First { get; set; }
-        public A A { get; set; }
+        public int Second { get; set; }
+        public DateTime Third { get; set; }
     }
 
 }
