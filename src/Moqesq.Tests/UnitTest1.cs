@@ -1,3 +1,4 @@
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -228,6 +229,8 @@ namespace Moqesq.Tests
         [TestMethod]
         public async Task TestShouldHave4()
         {
+            1.Should().Be(1);
+
             bool RecurseOrCompare(string propertyName, object a, object b)
             => new List<string> { "C", "D" }.Contains(propertyName) ? a.ShouldHave(b, RecurseOrCompare) : a.Equals(b);
 

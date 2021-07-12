@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,11 +7,12 @@ namespace Moqesq
 {
     public static class AssertionExtensions
     {
-        public static T ShouldEqual<T>(this T actual, T expected)
-        {
-            Assert.AreEqual(expected, actual);
-            return actual;
-        }
+        public static T ShouldEqual<T>(this T actual, T expected, EqualityComparer<T>? comparer)
+        => (comparer ?? EqualityComparer<T>.Default)
+            .Equals(expected, actual)
+                ? actual
+                : throw new AssertionFailureException();
+
 
         public static T ShouldNotBeNull<T>(this T actual)
         {
