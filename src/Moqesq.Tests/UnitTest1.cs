@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Moqesq.Tests
@@ -211,11 +212,12 @@ namespace Moqesq.Tests
 
             d.ShouldHave(c, RecursyThing);
 
-            static bool RecursyThing(string propertyName, object a, object b)
-            {
-                return propertyName == "E" || propertyName == "A" ? a.ShouldHave(b, RecursyThing) : a.Equals(b);
-            }
+
         }
+
+        static bool RecursyThing(string propertyName, object a, object b)
+        => new List<string> { "E", "A" }.Contains(propertyName) ? a.ShouldHave(b, RecursyThing) : a.Equals(b);
+
 
     }
 
