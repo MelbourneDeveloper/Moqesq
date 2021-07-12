@@ -199,54 +199,54 @@ namespace Moqesq.Tests
         [TestMethod]
         public async Task TestShouldHave()
         {
-            var x = new X { First = "1", Second = 2 };
+            var x = new D { First = "1", Second = 2 };
             var y = new Y { First = "1", Second = 2 };
             y.ShouldHave(x);
         }
 
         [TestMethod]
         public async Task TestShouldHave2()
-        => 
-        new B { First = "1", Second = 2, C = new C() { First = "2", X = new() { First = "123" } } }
+        =>
+        new B { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123" } } }
         .ShouldHave(
-        new A { First = "1", Second = 2, C = new C() { First = "2", X = new() { First = "123" } } },
-        new List<string> { "C", "X" });
+        new A { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123" } } },
+        new List<string> { "C", "D" });
 
 
         [TestMethod]
         public async Task TestShouldHave3()
         {
             bool RecurseOrCompare(string propertyName, object a, object b)
-            => new List<string> { "C", "X" }.Contains(propertyName) ? a.ShouldHave(b, RecurseOrCompare) : a.Equals(b);
+            => new List<string> { "C", "D" }.Contains(propertyName) ? a.ShouldHave(b, RecurseOrCompare) : a.Equals(b);
 
-            new B { First = "1", Second = 2, C = new C() { First = "2", X = new() { First = "123" } } }
+            new B { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123", Second = 2 } } }
             .ShouldHave(
-            new A { First = "1", Second = 2, C = new C() { First = "2", X = new() { First = "123" } } },
+            new A { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123", Second = 2 } } },
             RecurseOrCompare);
         }
     }
 
     public class A
     {
-        public string First { get; set; }
-        public int Second { get; set; }
+        public string StringProperty { get; set; }
+        public int IntProperty { get; set; }
         public C C { get; set; }
     }
 
     public class B
     {
-        public string First { get; set; }
-        public int Second { get; set; }
+        public string StringProperty { get; set; }
+        public int IntProperty { get; set; }
         public C C { get; set; }
     }
 
     public class C
     {
-        public string First { get; set; }
-        public X X { get; set; }
+        public string AnotherStringProperty { get; set; }
+        public D D { get; set; }
     }
 
-    public class X
+    public class D
     {
         public string First { get; set; }
         public int Second { get; set; }
