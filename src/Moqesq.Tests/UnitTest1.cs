@@ -208,7 +208,7 @@ namespace Moqesq.Tests
         public async Task TestShouldHave2()
         =>
         new B { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123" } } }
-        .ShouldHave(
+        .Has(
         new A { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123" } } },
         new List<string> { "C", "D" });
 
@@ -217,10 +217,10 @@ namespace Moqesq.Tests
         public async Task TestShouldHave3()
         {
             bool RecurseOrCompare(string propertyName, object a, object b)
-            => new List<string> { "C", "D" }.Contains(propertyName) ? a.ShouldHave(b, RecurseOrCompare) : a.Equals(b);
+            => new List<string> { "C", "D" }.Contains(propertyName) ? a.Has(b, RecurseOrCompare) : a.Equals(b);
 
             new B { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123", Second = 2 } } }
-            .ShouldHave(
+            .Has(
             new A { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123", Second = 2 } } },
             RecurseOrCompare);
         }
@@ -229,12 +229,12 @@ namespace Moqesq.Tests
         public async Task TestShouldHave4()
         {
             bool RecurseOrCompare(string propertyName, object a, object b)
-            => new List<string> { "C", "D" }.Contains(propertyName) ? a.ShouldHave(b, RecurseOrCompare) : a.Equals(b);
+            => new List<string> { "C", "D" }.Contains(propertyName) ? a.Has(b, RecurseOrCompare) : a.Equals(b);
 
             Assert.ThrowsException<AssertionFailureException>(() =>
             {
                 new B { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123", Second = 2 } } }
-                .ShouldHave(
+                .Has(
                 new A { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "124", Second = 2 } } },
                 RecurseOrCompare);
             });
