@@ -199,9 +199,9 @@ namespace Moqesq.Tests
         [TestMethod]
         public async Task TestShouldHave()
         {
-            var x = new D { First = "1", Second = 2 };
+            var d = new D { First = "1" };
             var y = new Y { First = "1", Second = 2 };
-            y.ShouldHave(x);
+            y.ShouldHave(d);
         }
 
         [TestMethod]
