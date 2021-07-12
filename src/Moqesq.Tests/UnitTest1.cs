@@ -238,7 +238,25 @@ namespace Moqesq.Tests
                 new A { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "124", Second = 2 } } },
                 RecurseOrCompare);
             });
+        }
 
+        [TestMethod]
+        [DataRow(1, 1, true)]
+        [DataRow(1, 2, false)]
+        [DataRow("1", 1, false)]
+        [DataRow("1", "1", true)]
+        [DataRow(true, -1, true)]
+        [DataRow(false, 0, true)]
+        public async void TestShouldEqual(object actual, object expected, bool isEqual)
+        {
+            if (isEqual)
+            {
+                actual.ShouldEqual(expected);
+            }
+            else
+            {
+                Assert.ThrowsException<AssertionFailureException>(() => actual.ShouldEqual(expected));
+            }
         }
     }
 
