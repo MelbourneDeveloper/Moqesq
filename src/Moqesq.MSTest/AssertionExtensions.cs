@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Moqesq
 {
@@ -51,5 +52,39 @@ namespace Moqesq
             Assert.IsTrue(check(actual));
             return actual;
         }
+
+        public static bool ShouldHave<T>(
+            this T item,
+            object has,
+            CheckValue? comp = null)
+        {
+            comp ??= (propertyName, a, b) => a.Equals(b);
+
+            has
+            .GetType()
+            .GetProperties()
+            .ToList<System.Reflection.PropertyInfo>()
+            .ForEach(p =>
+            {
+                object expected = p.GetValue(has);
+
+                object actual = item.GetType().GetProperty(p.Name).GetValue(item);
+
+                bool condition = comp(
+                                p.Name,
+                                expected,
+                                actual);
+
+                Assert.IsTrue(
+                    condition
+                    );
+            }
+            );
+
+            return true;
+        }
     }
+
+    public delegate bool CheckValue(string propertyName, object expected, object actual);
+
 }

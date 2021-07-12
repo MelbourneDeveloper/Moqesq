@@ -194,5 +194,68 @@ namespace Moqesq.Tests
                 .Go();
         }
 
+
+        [TestMethod]
+        public async Task TestShouldHave()
+        {
+            var a = new A { First = "1", Second = 2 };
+            var b = new B { First = "1", Second = 2 };
+            b.ShouldHave(a);
+        }
+
+        [TestMethod]
+        public async Task TestShouldHave2()
+        {
+            var c = new C { First = "1", Second = 2, E = new E() { First = "2", A = new() { First = "123" } } };
+            var d = new D { First = "1", Second = 2, E = new E() { First = "2", A = new() { First = "123" } } };
+
+            d.ShouldHave(c, RecursyThing);
+
+            static bool RecursyThing(string propertyName, object a, object b)
+            {
+                return propertyName switch
+                {
+                    "E" => a.ShouldHave(b, (p, aa, bb) => p == "A" ? aa.ShouldHave(bb) : aa.Equals(bb)),
+                    _ => a.Equals(b)
+                };
+
+
+            }
+        }
+
     }
+
+    public class A
+    {
+        public string First { get; set; }
+        public int Second { get; set; }
+    }
+
+    public class B
+    {
+        public string First { get; set; }
+        public int Second { get; set; }
+        public DateTime Third { get; set; }
+    }
+
+    public class C
+    {
+        public string First { get; set; }
+        public int Second { get; set; }
+        public E E { get; set; }
+    }
+
+    public class D
+    {
+        public string First { get; set; }
+        public int Second { get; set; }
+        public E E { get; set; }
+    }
+
+    public class E
+    {
+        public string First { get; set; }
+        public A A { get; set; }
+    }
+
 }
