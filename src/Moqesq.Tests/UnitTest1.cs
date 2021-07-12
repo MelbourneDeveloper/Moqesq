@@ -234,7 +234,7 @@ namespace Moqesq.Tests
             bool RecurseOrCompare(string propertyName, object a, object b)
             => new List<string> { "C", "D" }.Contains(propertyName) ? a.ShouldHave(b, RecurseOrCompare) : a.Equals(b);
 
-            Assert.ThrowsException<AssertFailedException>(() =>
+            Assert.ThrowsException<AssertionFailureException>(() =>
             {
                 new B { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123", Second = 2 } } }
                 .ShouldHave(
