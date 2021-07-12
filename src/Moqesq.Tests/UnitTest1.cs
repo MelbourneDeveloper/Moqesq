@@ -197,7 +197,7 @@ namespace Moqesq.Tests
 
 
         [TestMethod]
-        public async Task TestShouldHave()
+        public void TestShouldHave()
         {
             var d = new D { First = "1", Second = 2 };
             var y = new Y { First = "1", Second = 2 };
@@ -205,7 +205,7 @@ namespace Moqesq.Tests
         }
 
         [TestMethod]
-        public async Task TestShouldHave2()
+        public void TestShouldHave2()
         =>
         new B { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123" } } }
         .Has(
@@ -214,7 +214,7 @@ namespace Moqesq.Tests
 
 
         [TestMethod]
-        public async Task TestShouldHave3()
+        public void TestShouldHave3()
         {
             bool RecurseOrCompare(string propertyName, object a, object b)
             => new List<string> { "C", "D" }.Contains(propertyName) ? a.Has(b, RecurseOrCompare) : a.Equals(b);
@@ -226,7 +226,7 @@ namespace Moqesq.Tests
         }
 
         [TestMethod]
-        public async Task TestShouldHave4()
+        public void TestShouldHave4()
         {
             bool RecurseOrCompare(string propertyName, object a, object b)
             => new List<string> { "C", "D" }.Contains(propertyName) ? a.Has(b, RecurseOrCompare) : a.Equals(b);
@@ -247,7 +247,7 @@ namespace Moqesq.Tests
         [DataRow("1", "1", true)]
         [DataRow(true, -1, true)]
         [DataRow(false, 0, true)]
-        public async void TestShouldEqual(object actual, object expected, bool isEqual)
+        public void TestShouldEqual(object actual, object expected, bool isEqual)
         {
             if (isEqual)
             {
@@ -288,6 +288,13 @@ namespace Moqesq.Tests
             {
                 actual.ShouldBeNull();
             }
+        }
+
+        [TestMethod]
+        public void TestAnd()
+        {
+            Assert.AreEqual(1, 1.And(() => { }));
+            Assert.ThrowsException<InvalidOperationException>(() => throw new InvalidOperationException());
         }
 
     }
