@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Moqesq
 {
@@ -74,22 +75,14 @@ namespace Moqesq
             has
             .GetType()
             .GetProperties()
-            .ToList<System.Reflection.PropertyInfo>()
+            .ToList<PropertyInfo>()
             .ForEach(p =>
-            {
-                object expected = p.GetValue(has);
-
-                object actual = item.GetType().GetProperty(p.Name).GetValue(item);
-
-                bool condition = comp(
-                                p.Name,
-                                expected,
-                                actual);
-
-                Assert.IsTrue(
-                    condition
-                    );
-            }
+            Assert.IsTrue(
+                    comp(
+                        p.Name,
+                        p.GetValue(has),
+                        item.GetType().GetProperty(p.Name).GetValue(item))
+                    )
             );
 
             return true;

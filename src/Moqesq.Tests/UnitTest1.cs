@@ -206,16 +206,11 @@ namespace Moqesq.Tests
 
         [TestMethod]
         public async Task TestShouldHave2()
-        {
-            var c = new C { First = "1", Second = 2, E = new E() { First = "2", A = new() { First = "123" } } };
-            var d = new D { First = "1", Second = 2, E = new E() { First = "2", A = new() { First = "123" } } };
-
-            d.ShouldHave(c, new List<string> { "E", "A" });
-
-
-        }
-
-
+        => 
+        new D { First = "1", Second = 2, E = new E() { First = "2", A = new() { First = "123" } } }
+        .ShouldHave(
+        new C { First = "1", Second = 2, E = new E() { First = "2", A = new() { First = "123" } } },
+        new List<string> { "E", "A" });
     }
 
     public class A
