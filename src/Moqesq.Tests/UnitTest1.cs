@@ -199,7 +199,7 @@ namespace Moqesq.Tests
         [TestMethod]
         public async Task TestShouldHave()
         {
-            var d = new D { First = "1" };
+            var d = new D { First = "1", Second = 2 };
             var y = new Y { First = "1", Second = 2 };
             y.ShouldHave(d);
         }
@@ -223,6 +223,22 @@ namespace Moqesq.Tests
             .ShouldHave(
             new A { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123", Second = 2 } } },
             RecurseOrCompare);
+        }
+
+        [TestMethod]
+        public async Task TestShouldHave4()
+        {
+            bool RecurseOrCompare(string propertyName, object a, object b)
+            => new List<string> { "C", "D" }.Contains(propertyName) ? a.ShouldHave(b, RecurseOrCompare) : a.Equals(b);
+
+            Assert.ThrowsException<AssertFailedException>(() =>
+            {
+                new B { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123", Second = 2 } } }
+                .ShouldHave(
+                new A { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "124", Second = 2 } } },
+                RecurseOrCompare);
+            });
+
         }
     }
 
