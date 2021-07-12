@@ -54,9 +54,20 @@ namespace Moqesq
         }
 
         public static bool ShouldHave<T>(
-            this T item,
-            object has,
-            CheckValue? comp = null)
+        this T item,
+        object has,
+        IList<string> recurseProperties)
+        {
+            bool RecurseOrCompare(string propertyName, object a, object b)
+            => recurseProperties.Contains(propertyName) ? a.ShouldHave(b, RecurseOrCompare) : a.Equals(b);
+
+            return ShouldHave(item, has, RecurseOrCompare);
+        }
+
+        public static bool ShouldHave<T>(
+        this T item,
+        object has,
+        CheckValue? comp = null)
         {
             comp ??= (propertyName, a, b) => a.Equals(b);
 

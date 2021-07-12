@@ -210,13 +210,10 @@ namespace Moqesq.Tests
             var c = new C { First = "1", Second = 2, E = new E() { First = "2", A = new() { First = "123" } } };
             var d = new D { First = "1", Second = 2, E = new E() { First = "2", A = new() { First = "123" } } };
 
-            d.ShouldHave(c, RecursyThing);
+            d.ShouldHave(c, new List<string> { "E", "A" });
 
 
         }
-
-        static bool RecursyThing(string propertyName, object a, object b)
-        => new List<string> { "E", "A" }.Contains(propertyName) ? a.ShouldHave(b, RecursyThing) : a.Equals(b);
 
 
     }
