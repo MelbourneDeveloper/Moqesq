@@ -213,13 +213,7 @@ namespace Moqesq.Tests
 
             static bool RecursyThing(string propertyName, object a, object b)
             {
-                return propertyName switch
-                {
-                    "E" => a.ShouldHave(b, (p, aa, bb) => p == "A" ? aa.ShouldHave(bb) : aa.Equals(bb)),
-                    _ => a.Equals(b)
-                };
-
-
+                return propertyName == "E" || propertyName == "A" ? a.ShouldHave(b, RecursyThing) : a.Equals(b);
             }
         }
 
