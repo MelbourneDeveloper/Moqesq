@@ -226,37 +226,4 @@ namespace Moqesq.Tests
         }
     }
 
-    public class A
-    {
-        public string StringProperty { get; set; }
-        public int IntProperty { get; set; }
-        public C C { get; set; }
-    }
-
-    public class B
-    {
-        public string StringProperty { get; set; }
-        public int IntProperty { get; set; }
-        public C C { get; set; }
-    }
-
-    public class C
-    {
-        public string AnotherStringProperty { get; set; }
-        public D D { get; set; }
-    }
-
-    public class D
-    {
-        public string First { get; set; }
-        public int Second { get; set; }
-    }
-
-    public class Y
-    {
-        public string First { get; set; }
-        public int Second { get; set; }
-        public DateTime Third { get; set; }
-    }
-
 }
