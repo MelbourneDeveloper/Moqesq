@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Moqesq</name>
+    </assembly>
+    <members>
+        <member name="M:Moqesq.AssertionExtensions.Has``1(``0,System.Object,System.Collections.Generic.IList{System.String})">
+            <summary>
+            Tests that the item has all the properties in the expected, and that the value of those match.
+            </summary>
+        </member>
+        <member name="M:Moqesq.AssertionExtensions.Has``1(``0,System.Object,Moqesq.CheckValue)">
+            <summary>
+            Tests that the item has all the properties in the expected, and that the value of those match, but allows for comparison and deep recursion with checkValue
+            </summary>
+        </member>
+        <member name="M:Moqesq.AssertionExtensions.ShouldHave``1(``0,System.Object,Moqesq.CheckValue)">
+            <summary>
+            Tests that the item has all the properties in the expected, and that the value of those match, but allows for comparison and deep recursion with checkValue
+            </summary>
+        </member>
+        <member name="T:Moqesq.CheckValue">
+            <summary>
+            Specify logic for comparison of two objects based on the name of their property
+            </summary>
+            <param name="propertyName">The property name</param>
+            <param name="expected">Expected property value</param>
+            <param name="actual">Actual property value</param>
+            <returns></returns>
+        </member>
+        <member name="M:Moqesq.LogCheckExtensions.VerifyLog``2(Moq.Mock{Microsoft.Extensions.Logging.ILogger{``0}},System.Linq.Expressions.Expression{System.Func{System.Object,System.Type,System.Boolean}},Microsoft.Extensions.Logging.LogLevel,System.Int32,System.Nullable{Microsoft.Extensions.Logging.EventId})">
+            <summary>
+            Verify that the log was called and get access to check the log arguments 
+            </summary>
+        </member>
+        <member name="M:Moqesq.LogCheckExtensions.VerifyLog``1(Moq.Mock{Microsoft.Extensions.Logging.ILogger{``0}},System.Linq.Expressions.Expression{System.Func{System.Object,System.Type,System.Boolean}},Microsoft.Extensions.Logging.LogLevel,System.Int32)">
+            <summary>
+            Verify that the log was called and get access to check the log arguments 
+            </summary>
+        </member>
+        <member name="M:Moqesq.LogCheckExtensions.CheckValue``1(System.Object,System.String,``0)">
+            <summary>
+            Check whether or not the log arguments match the expected result
+            </summary>
+        </member>
+        <member name="M:Moqesq.LogCheckExtensions.CheckValue``1(System.Object,System.String,System.Func{``0,System.Boolean})">
+            <summary>
+            Check whether or not the log arguments match the expected result
+            </summary>
+        </member>
+    </members>
+</doc>

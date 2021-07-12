@@ -6,6 +6,8 @@ using System.Collections.Immutable;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
 namespace Moqesq
 {
     public class MockContainer

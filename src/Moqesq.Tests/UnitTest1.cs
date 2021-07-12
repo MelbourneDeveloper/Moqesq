@@ -205,6 +205,14 @@ namespace Moqesq.Tests
         }
 
         [TestMethod]
+        public void TestShouldHaveWithExclusion()
+        {
+            var d = new D { First = "1", Second = 2 };
+            var y = new Y { First = "1" };
+            y.ShouldHave(d, (p, a, b) => p == "Second" ? true : a.Equals(b));
+        }
+
+        [TestMethod]
         public void TestShouldHave2()
         =>
         new B { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123" } } }
@@ -309,11 +317,7 @@ namespace Moqesq.Tests
         public void TestAllShould()
         {
             new List<int> { 1, 2, 3 }.AllShould(a => a < 4);
-
             Assert.ThrowsException<AssertionFailureException>(() => new List<int> { 1, 2, 3 }.AllShould(a => a > 5));
-
-
-            ;
         }
 
     }

@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
 namespace Moqesq
 {
     public static class LogCheckExtensions
