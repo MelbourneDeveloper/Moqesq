@@ -297,6 +297,13 @@ namespace Moqesq.Tests
             Assert.ThrowsException<InvalidOperationException>(() => throw new InvalidOperationException());
         }
 
+        [TestMethod]
+        public void TestShould()
+        {
+            Assert.AreEqual(1, 1.Should((a) => true));
+            Assert.ThrowsException<AssertionFailureException>(() => 1.Should((a) => false));
+        }
+
     }
 
 }

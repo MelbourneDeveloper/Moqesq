@@ -27,10 +27,7 @@ namespace Moqesq
             return actual;
         }
 
-        public static T And<T>(this T actual, Func<T, bool> check)
-        => check == null ? throw new ArgumentNullException(nameof(check)) :
-            check(actual) ? actual : throw new AssertionFailureException();
-
+  
         public static T Should<T>(this T actual, Func<T, bool> check)
         => check == null ? throw new ArgumentNullException(nameof(check))
             : check(actual) ? actual : throw new AssertionFailureException();
