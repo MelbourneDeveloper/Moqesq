@@ -275,6 +275,21 @@ namespace Moqesq.Tests
             }
         }
 
+        [TestMethod]
+        [DataRow(null, false)]
+        [DataRow(1, true)]
+        public void TestShouldBeNull(object actual, bool throwException)
+        {
+            if (throwException)
+            {
+                Assert.ThrowsException<AssertionFailureException>(() => actual.ShouldBeNull());
+            }
+            else
+            {
+                actual.ShouldBeNull();
+            }
+        }
+
     }
 
 }
