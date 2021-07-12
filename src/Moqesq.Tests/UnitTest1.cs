@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Moqesq.Tests
@@ -194,5 +195,131 @@ namespace Moqesq.Tests
                 .Go();
         }
 
+
+        [TestMethod]
+        public void TestShouldHave()
+        {
+            var d = new D { First = "1", Second = 2 };
+            var y = new Y { First = "1", Second = 2 };
+            y.ShouldHave(d);
+        }
+
+        [TestMethod]
+        public void TestShouldHaveWithExclusion()
+        {
+            var d = new D { First = "1", Second = 2 };
+            var y = new Y { First = "1" };
+            y.ShouldHave(d, (p, a, b) => p == "Second" ? true : a.Equals(b));
+        }
+
+        [TestMethod]
+        public void TestShouldHave2()
+        =>
+        new B { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123" } } }
+        .Has(
+        new A { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123" } } },
+        new List<string> { "C", "D" });
+
+
+        [TestMethod]
+        public void TestShouldHave3()
+        {
+            bool RecurseOrCompare(string propertyName, object a, object b)
+            => new List<string> { "C", "D" }.Contains(propertyName) ? a.Has(b, RecurseOrCompare) : a.Equals(b);
+
+            new B { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123", Second = 2 } } }
+            .Has(
+            new A { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123", Second = 2 } } },
+            RecurseOrCompare);
+        }
+
+        [TestMethod]
+        public void TestShouldHave4()
+        {
+            bool RecurseOrCompare(string propertyName, object a, object b)
+            => new List<string> { "C", "D" }.Contains(propertyName) ? a.Has(b, RecurseOrCompare) : a.Equals(b);
+
+            Assert.ThrowsException<AssertionFailureException>(() =>
+            {
+                new B { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123", Second = 2 } } }
+                .Has(
+                new A { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "124", Second = 2 } } },
+                RecurseOrCompare);
+            });
+        }
+
+        [TestMethod]
+        [DataRow(1, 1, true)]
+        [DataRow(1, 2, false)]
+        [DataRow("1", 1, false)]
+        [DataRow("1", "1", true)]
+        [DataRow(true, -1, true)]
+        [DataRow(false, 0, true)]
+        public void TestShouldEqual(object actual, object expected, bool isEqual)
+        {
+            if (isEqual)
+            {
+                actual.ShouldEqual(expected);
+            }
+            else
+            {
+                Assert.ThrowsException<AssertionFailureException>(() => actual.ShouldEqual(expected));
+            }
+        }
+
+
+        [TestMethod]
+        [DataRow(null, true)]
+        [DataRow(1, false)]
+        public void TestShouldNotBeNull(object actual, bool throwException)
+        {
+            if (throwException)
+            {
+                Assert.ThrowsException<AssertionFailureException>(() => actual.ShouldNotBeNull());
+            }
+            else
+            {
+                actual.ShouldNotBeNull();
+            }
+        }
+
+        [TestMethod]
+        [DataRow(null, false)]
+        [DataRow(1, true)]
+        public void TestShouldBeNull(object actual, bool throwException)
+        {
+            if (throwException)
+            {
+                Assert.ThrowsException<AssertionFailureException>(() => actual.ShouldBeNull());
+            }
+            else
+            {
+                actual.ShouldBeNull();
+            }
+        }
+
+        [TestMethod]
+        public void TestAnd()
+        {
+            Assert.AreEqual(1, 1.And(() => { }));
+            Assert.ThrowsException<InvalidOperationException>(() => throw new InvalidOperationException());
+        }
+
+        [TestMethod]
+        public void TestShould()
+        {
+            Assert.AreEqual(1, 1.Should((a) => true));
+            Assert.ThrowsException<AssertionFailureException>(() => 1.Should((a) => false));
+        }
+
+
+        [TestMethod]
+        public void TestAllShould()
+        {
+            new List<int> { 1, 2, 3 }.AllShould(a => a < 4);
+            Assert.ThrowsException<AssertionFailureException>(() => new List<int> { 1, 2, 3 }.AllShould(a => a > 5));
+        }
+
     }
+
 }

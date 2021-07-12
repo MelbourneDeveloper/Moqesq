@@ -6,6 +6,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
 namespace Moqesq
 {
 
@@ -62,7 +64,7 @@ namespace Moqesq
 
         public static MockContainer<TService, TResult?> FromCtors<TService, TResult>(
             this Func<TService, Task<TResult?>> act,
-            Action<MockLookup>? configureServices = null) where TService : notnull
+            Action<MockContainer>? configureServices = null) where TService : notnull
         {
             var serviceCollection = new ServiceCollection();
             var mocksByType = new Dictionary<Type, Mock>();
@@ -76,7 +78,7 @@ namespace Moqesq
 
             if (configureServices != null)
             {
-                configureServices(new MockLookup(mocksByType));
+                configureServices(new MockContainer(mocksByType));
             }
 
             TService service = serviceProvider.GetRequiredService<TService>();
