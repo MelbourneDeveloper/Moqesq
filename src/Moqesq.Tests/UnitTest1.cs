@@ -304,6 +304,18 @@ namespace Moqesq.Tests
             Assert.ThrowsException<AssertionFailureException>(() => 1.Should((a) => false));
         }
 
+
+        [TestMethod]
+        public void TestAllShould()
+        {
+            new List<int> { 1, 2, 3 }.AllShould(a => a < 4);
+
+            Assert.ThrowsException<AssertionFailureException>(() => new List<int> { 1, 2, 3 }.AllShould(a => a > 5));
+
+
+            ;
+        }
+
     }
 
 }
