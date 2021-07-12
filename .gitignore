@@ -15,3 +15,5 @@ project.lock.json
 *.lastcodeanalysissucceeded
 src/.idea/*
 *.user
+
+src/Moqesq/Moqesq.xml
