@@ -9,6 +9,7 @@ namespace Moqesq
 {
     public static class AssertionExtensions
     {
+        #region Public Methods
         public static T ShouldEqual<T>(this T actual, T expected, EqualityComparer<T>? comparer = null)
         => (comparer ?? EqualityComparer<T>.Default)
             .Equals(expected, actual)
@@ -29,7 +30,7 @@ namespace Moqesq
             return actual;
         }
 
-  
+
         public static T Should<T>(this T actual, Func<T, bool> check)
         => check == null ? throw new ArgumentNullException(nameof(check))
             : check(actual) ? actual : throw new AssertionFailureException();
@@ -56,8 +57,8 @@ namespace Moqesq
         object has,
         IList<string> recurseProperties)
         {
-            bool RecurseOrCompare(string propertyName, object a, object b)
-            => recurseProperties.Contains(propertyName) ? a.Has(b, RecurseOrCompare) : a.Equals(b);
+            bool RecurseOrCompare(string propertyName, object? a, object? b)
+            => recurseProperties.Contains(propertyName) ? a.Has(b, RecurseOrCompare) : Compare(a, b);
 
             return Has(item, has, RecurseOrCompare);
         }
@@ -67,28 +68,34 @@ namespace Moqesq
         /// </summary>
         public static bool Has<T>(
         this T item,
-        object has,
-        CheckValue? checkValue = null)
+        object? has,
+        CheckValue? checkValue = null,
+        Func<T, PropertyInfo, object?>? getTargetValue = null)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
-            if (has == null) throw new ArgumentNullException(nameof(has));
 
-            checkValue ??= (propertyName, a, b) => a.Equals(b);
+            checkValue ??= (propertyName, a, b) => Compare(a, b);
+
+            getTargetValue ??= GetTargetValue;
+
+            //The item has null be definition
+            if (has == null) return true;
 
             has
             .GetType()
             .GetProperties()
-            .ToList()
+            .ToList<PropertyInfo>()
             .ForEach(p =>
             ThrowOnFailure(
-                    checkValue(
-                        p.Name,
-                        p.GetValue(has),
-                        item.GetType().GetProperty(p.Name).GetValue(item))
+                checkValue(
+                    p.Name,
+                    p.GetValue(has),
+                    getTargetValue(item, p)), $"Mistmatch on {p.Name}"
                     )
             );
 
             return true;
+
         }
 
         /// <summary>
@@ -97,26 +104,29 @@ namespace Moqesq
         public static T ShouldHave<T>(
         this T item,
         object has,
-        CheckValue? checkValue = null)
+        CheckValue? checkValue = null,
+        Func<T, PropertyInfo, object?>? getTargetValue = null)
         {
-            Has(item, has, checkValue);
+            Has(item, has, checkValue, getTargetValue);
             return item;
         }
+        #endregion
 
-        private static void ThrowOnFailure(bool condition)
+        #region Private Methods
+        private static void ThrowOnFailure(bool condition, string message)
         {
-            if (!condition) throw new AssertionFailureException();
+            if (!condition) throw new AssertionFailureException(message);
         }
+
+        private static object? GetTargetValue<T>(T item, PropertyInfo p) => item?.GetType().GetProperty(p.Name)?.GetValue(item);
+
+
+        private static bool Compare<T>(T? a, object? b)
+        {
+            if (a == null && b == null) return true;
+            if (a == null) return false;
+            return a.Equals(b);
+        }
+        #endregion
     }
-
-
-    /// <summary>
-    /// Specify logic for comparison of two objects based on the name of their property
-    /// </summary>
-    /// <param name="propertyName">The property name</param>
-    /// <param name="expected">Expected property value</param>
-    /// <param name="actual">Actual property value</param>
-    /// <returns></returns>
-    public delegate bool CheckValue(string propertyName, object expected, object actual);
-
 }
