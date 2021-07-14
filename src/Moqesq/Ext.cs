@@ -157,10 +157,18 @@ namespace Moqesq
             return container;
         }
 
-        public static void SetupResult<TMock, TResult>(this Mock<TMock> mock, Expression<Func<TMock, TResult>> expression, TResult result) where TMock : class
+        public static Mock<TMock> SetupResult<TMock, TResult>(this Mock<TMock> mock, Expression<Func<TMock, TResult>> expression, TResult result) where TMock : class
         {
             if (mock == null) throw new ArgumentNullException(nameof(mock));
             mock.Setup(expression).Returns(result);
+            return mock;
+        }
+
+        public static MockContainer SetupResult<TMock, TResult>(this MockContainer mockcontainer, Expression<Func<TMock, TResult>> expression, TResult result) where TMock : class
+        {
+            if (mockcontainer == null) throw new ArgumentNullException(nameof(mockcontainer));
+            mockcontainer.GetMock<TMock>().Setup(expression).Returns(result);
+            return mockcontainer;
         }
         #endregion Public Methods
 
