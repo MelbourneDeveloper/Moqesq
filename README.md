@@ -122,3 +122,32 @@ public async Task TestIntegration()
 }
 ```
 
+### Test Mapping
+
+This tests that `y` has the same properties as `d` and that those properties are equal regardless of the type.
+
+```csharp
+    [TestMethod]
+    public void TestShouldHave()
+    {
+        var d = new D { First = "1", Second = 2 };
+        var y = new Y { First = "1", Second = 2 };
+        y.ShouldHave(d);
+    }
+```
+
+And, you can recurse deeper in to the object graph like this:
+
+```csharp
+    [TestMethod]
+    public void TestShouldHave2()
+    {
+        bool RecurseOrCompare(string propertyName, object a, object b)
+         => new List<string> { "C", "D" }.Contains(propertyName) ? a.Has(b, RecurseOrCompare) : a.Equals(b);
+
+        new B { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123", Second = 2 } } }
+        .Has(
+        new A { StringProperty = "1", IntProperty = 2, C = new C() { AnotherStringProperty = "2", D = new() { First = "123", Second = 2 } } },
+        RecurseOrCompare);
+    }
+```
